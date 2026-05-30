@@ -2,6 +2,9 @@
 //!
 //! Plugins are WebAssembly modules loaded via Extism that can extend
 //! ZeroClaw with custom tools and channels. Enable with `--features plugins-wasm`.
+//!
+//! For WIT Component Model (WASIP2 ABI) plugins, enable `--features plugins-wasmtime`
+//! (or `plugins-wasm-cranelift` / `plugins-wasm-pulley` for a specific JIT backend).
 
 pub mod error;
 pub mod host;
@@ -9,6 +12,9 @@ pub mod runtime;
 pub mod signature;
 pub mod wasm_channel;
 pub mod wasm_tool;
+
+#[cfg(feature = "plugins-wasmtime")]
+pub mod component;
 
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;

@@ -245,6 +245,7 @@ default = [
     "tui-onboarding",
     "observability-prometheus",
     "schema-export",
+    "plugins-wasm-cranelift",
 ]
 
 # The core agent runtime — agent loop, tools, persistence subsystems.
@@ -332,6 +333,11 @@ sandbox-landlock = ["zeroclaw-runtime/sandbox-landlock"]
 sandbox-bubblewrap = ["zeroclaw-runtime/sandbox-bubblewrap"]
 browser-native = ["zeroclaw-tools/browser-native"]
 plugins-wasm = ["dep:zeroclaw-plugins", "zeroclaw-runtime/plugins-wasm"]
+# Cranelift JIT backend (x86_64, RISC-V, s390x, …); do not combine with plugins-wasm-pulley
+plugins-wasm-cranelift = ["dep:zeroclaw-plugins", "zeroclaw-plugins/plugins-wasm-cranelift"]
+# Pulley interpreter — use INSTEAD of plugins-wasm-cranelift on 32-bit ARM targets
+plugins-wasm-pulley    = ["dep:zeroclaw-plugins", "zeroclaw-plugins/plugins-wasm-pulley"]
+plugins-wit-v0 = ["dep:zeroclaw-plugins", "zeroclaw-plugins/plugins-wit-v0"]
 probe = ["dep:zeroclaw-hardware", "zeroclaw-hardware/probe"]
 rag-pdf = ["zeroclaw-tools/rag-pdf", "zeroclaw-runtime/rag-pdf"]
 webauthn = ["zeroclaw-runtime/webauthn", "zeroclaw-gateway?/webauthn"]

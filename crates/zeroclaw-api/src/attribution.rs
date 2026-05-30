@@ -93,6 +93,7 @@ pub enum ChannelKind {
     NextcloudTalk,
     Nostr,
     Notion,
+    Plugin,
     Qq,
     Reddit,
     Signal,
