@@ -37,7 +37,7 @@
             const path_to_root = "../";
             const default_light_theme = "default-dark";
             const default_dark_theme = "default-dark";
-            window.path_to_searchindex_js = "../searchindex-32ccf4f5.js";
+            window.path_to_searchindex_js = "../searchindex-41030cb5.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-eebe6d87.js"></script>
@@ -531,12 +531,16 @@
 <h2 id="zeroclaw-gateway-get-paircode"><a class="header" href="#zeroclaw-gateway-get-paircode"><code>zeroclaw gateway get-paircode</code></a></h2>
 <p>Afficher ou générer le code d’appairage de la passerelle.</p>
 <p>Affiche le code d’appairage pour connecter de nouveaux clients sans redémarrer la passerelle. La passerelle doit être en cours d’exécution.</p>
-<p>Avec l’option –new, génère un nouveau code d’appairage même si la passerelle a déjà été appairée (utile pour ajouter des clients supplémentaires).</p>
-<p>zeroclaw gateway get-paircode       # afficher le code d’appairage actuel zeroclaw gateway get-paircode –new # générer un nouveau code d’appairage zeroclaw gateway get-paircode –new –port 3001 # cibler la passerelle sur un port alternatif</p>
+<p>With –new, generates a fresh pairing code even if the gateway was previously paired (useful for adding additional clients). This does NOT revoke existing tokens.</p>
+<p>With –rotate, revokes ALL paired bearer tokens, clears the device registry, and issues a fresh code. Use this after a suspected token leak when you do not know which token was compromised; every client must re-pair.</p>
+<p>With –rotate-device <id>, revokes just that device’s bearer token and issues a fresh code for re-pairing that one device.</id></p>
+<p>Examples: zeroclaw gateway get-paircode               # show current pairing code zeroclaw gateway get-paircode –new         # add another client (no revocation) zeroclaw gateway get-paircode –rotate      # revoke ALL tokens, then issue a code zeroclaw gateway get-paircode –rotate-device dash-1  # revoke one device’s token zeroclaw gateway get-paircode –new –port 3001 # target alternate-port gateway</p>
 <p><strong>Utilisation :</strong> <code>zeroclaw gateway get-paircode [OPTIONS]</code></p>
 <p><strong>Options :</strong></p>
 <ul>
-<li><code>--new</code> — Générer un nouveau code d’appairage (même si déjà appairé)</li>
+<li><code>--new</code> — Generate a new pairing code for adding a client (does not revoke existing tokens)</li>
+<li><code>--rotate</code> — Revoke ALL paired tokens and clear the device registry, then issue a new code</li>
+<li><code>--rotate-device &lt;DEVICE_ID&gt;</code> — Revoke a single device’s bearer token by id, then issue a new code</li>
 <li><code>-p</code>, <code>--port &lt;PORT&gt;</code> — Port de la passerelle en cours d’exécution à interroger ; par défaut config gateway.port</li>
 <li><code>--host &lt;HOST&gt;</code> — Hôte de la passerelle en cours d’exécution à interroger ; par défaut config gateway.host</li>
 </ul>

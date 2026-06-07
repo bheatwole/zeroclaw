@@ -37,7 +37,7 @@
             const path_to_root = "../";
             const default_light_theme = "default-dark";
             const default_dark_theme = "default-dark";
-            window.path_to_searchindex_js = "../searchindex-a15d5de4.js";
+            window.path_to_searchindex_js = "../searchindex-f96fa679.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-475fae1a.js"></script>
@@ -544,15 +544,21 @@ zeroclaw gateway restart -p 8080    # restart on port 8080</p>
 <h2 id="zeroclaw-gateway-get-paircode"><a class="header" href="#zeroclaw-gateway-get-paircode"><code>zeroclaw gateway get-paircode</code></a></h2>
 <p>Show or generate the gateway pairing code.</p>
 <p>Displays the pairing code for connecting new clients without restarting the gateway. Requires the gateway to be running.</p>
-<p>With –new, generates a fresh pairing code even if the gateway was previously paired (useful for adding additional clients).</p>
+<p>With –new, generates a fresh pairing code even if the gateway was previously paired (useful for adding additional clients). This does NOT revoke existing tokens.</p>
+<p>With –rotate, revokes ALL paired bearer tokens, clears the device registry, and issues a fresh code. Use this after a suspected token leak when you do not know which token was compromised; every client must re-pair.</p>
+<p>With –rotate-device <id>, revokes just that device’s bearer token and issues a fresh code for re-pairing that one device.</id></p>
 <p>Examples:
-zeroclaw gateway get-paircode       # show current pairing code
-zeroclaw gateway get-paircode –new # generate a new pairing code
+zeroclaw gateway get-paircode               # show current pairing code
+zeroclaw gateway get-paircode –new         # add another client (no revocation)
+zeroclaw gateway get-paircode –rotate      # revoke ALL tokens, then issue a code
+zeroclaw gateway get-paircode –rotate-device dash-1  # revoke one device’s token
 zeroclaw gateway get-paircode –new –port 3001 # target alternate-port gateway</p>
 <p><strong>Usage:</strong> <code>zeroclaw gateway get-paircode [OPTIONS]</code></p>
 <p><strong>Options:</strong></p>
 <ul>
-<li><code>--new</code> — Generate a new pairing code (even if already paired)</li>
+<li><code>--new</code> — Generate a new pairing code for adding a client (does not revoke existing tokens)</li>
+<li><code>--rotate</code> — Revoke ALL paired tokens and clear the device registry, then issue a new code</li>
+<li><code>--rotate-device &lt;DEVICE_ID&gt;</code> — Revoke a single device’s bearer token by id, then issue a new code</li>
 <li><code>-p</code>, <code>--port &lt;PORT&gt;</code> — Port of the running gateway to query; defaults to config gateway.port</li>
 <li><code>--host &lt;HOST&gt;</code> — Host of the running gateway to query; defaults to config gateway.host</li>
 </ul>
