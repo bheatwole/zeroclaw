@@ -37,7 +37,7 @@
             const path_to_root = "../";
             const default_light_theme = "default-dark";
             const default_dark_theme = "default-dark";
-            window.path_to_searchindex_js = "../searchindex-70ed6cb6.js";
+            window.path_to_searchindex_js = "../searchindex-7f9cbd39.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-eebe6d87.js"></script>
@@ -346,6 +346,30 @@ runtime_profile = "deep"             # alias into runtime_profiles.&lt;alias&gt;
 </code></pre>
 <p><code>risk_profile</code> et <code>runtime_profile</code> référencent des tables d’alias indépendantes, leurs noms n’ont donc pas besoin de correspondre (<code>runtime_profile</code> est également facultatif). <code>Config::validate()</code> échoue bruyamment au démarrage si <code>model_provider</code> ne se résout pas en une entrée <code>[providers.models.&lt;type&gt;.&lt;alias&gt;]</code> configurée, ou si <code>risk_profile</code> ne se résout pas en une entrée <code>[risk_profiles.&lt;alias&gt;]</code> configurée.</p>
 <p>Pour plusieurs agents pointant vers différents fournisseurs, consultez <a href="./routing.html">Routing</a>.</p>
+<h2 id="fallback-on-failure"><a class="header" href="#fallback-on-failure">Fallback on failure</a></h2>
+<p>When a request to a provider fails after exhausting its retries (provider down, key rate-limited, model unavailable), the alias can fall over to alternatives you declare on the alias entry. Two independent, ordered axes:</p>
+<pre><code class="language-toml">[providers.models.anthropic.prod]
+model           = "claude-sonnet-4-5"
+fallback_models = ["claude-haiku-4-5"]   # same provider, alternate models
+fallback        = ["openai.backup"]      # other aliases, each with its own key/endpoint
+
+[providers.models.openai.backup]
+model = "gpt-4.1"
+</code></pre>
+<ul>
+<li><strong><code>fallback_models</code></strong> — alternate model IDs tried on <em>this</em> provider, using the same endpoint, key, and headers. Only the model identifier changes. Use it when a provider serves a backup model (a smaller or older variant) that should be tried before leaving the provider entirely.</li>
+<li><strong><code>fallback</code></strong> — an ordered list of <em>other</em> provider aliases (dotted <code>&lt;type&gt;.&lt;alias&gt;</code> references into <code>[providers.models]</code>). Each fallback alias resolves with <strong>its own</strong> credentials, endpoint, and model — a fallback never inherits the failing alias’s key.</li>
+</ul>
+<h3 id="order-of-attempts"><a class="header" href="#order-of-attempts">Order of attempts</a></h3>
+<p>The walk is depth-first: an alias’s entire model list is exhausted before leaving it, then each <code>fallback</code> alias is descended in turn, applying that alias’s own <code>fallback_models</code> and <code>fallback</code> recursively. For the example above:</p>
+<pre><code>anthropic.prod/claude-sonnet-4-5
+  -&gt; anthropic.prod/claude-haiku-4-5
+  -&gt; openai.backup/gpt-4.1
+  -&gt; (request fails)
+</code></pre>
+<p>Fallback aliases can themselves declare <code>fallback</code>, so the chain is as long as your config makes it, up to a maximum depth of <strong>3 aliases</strong>. A chain that loops back on itself (<code>a</code> -&gt; <code>b</code> -&gt; <code>a</code>) is detected and the cycle edge is pruned, and an acyclic chain deeper than the limit has its remaining links pruned; neither ever loops, hangs, or overflows the stack.</p>
+<h3 id="misconfiguration"><a class="header" href="#misconfiguration">Misconfiguration</a></h3>
+<p>A <code>fallback</code> entry that names an alias which is not configured, one that closes a cycle, or a chain that exceeds the maximum depth is <strong>non-fatal</strong>: <code>Config::validate()</code> still succeeds, the offending edge is skipped at runtime, and the issue is surfaced as a validation warning (<code>dangling_fallback_ref</code> / <code>fallback_cycle</code> / <code>max_fallback_depth_exceeded</code>) on the CLI and in the dashboard. A <code>fallback_models</code> entry that is blank or duplicates the alias’s primary <code>model</code> is likewise skipped at runtime and surfaced (<code>empty_fallback_model</code> / <code>fallback_model_duplicates_primary</code>). A bad fallback link degrades gracefully — it never prevents the agent from running.</p>
 <h2 id="voir-aussi"><a class="header" href="#voir-aussi">Voir aussi</a></h2>
 <ul>
 <li><a href="./overview.html">Vue d’ensemble</a></li>
