@@ -37,7 +37,7 @@
             const path_to_root = "../";
             const default_light_theme = "default-dark";
             const default_dark_theme = "default-dark";
-            window.path_to_searchindex_js = "../searchindex-41030cb5.js";
+            window.path_to_searchindex_js = "../searchindex-70ed6cb6.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-eebe6d87.js"></script>
@@ -217,10 +217,12 @@
 <p>Conservez la séparation basée sur la fréquence de mise à jour :</p>
 <ul>
 <li>Les étiquettes portent leur propre classification durable : type de travail, périmètre/composant, risque de revue, taille de PR mesurée et exemption d’obsolescence.</li>
-<li>Les champs du tableau de projet conviennent pour l’étape de planification d’un ticket, le propriétaire actif, l’état des dépendances et le regroupement de la feuille de route lorsque ces champs sont activement maintenus.</li>
+<li>Project board fields are appropriate for issue planning stage, active owner or steward path, dependency state, stale-exemption reason, and roadmap grouping when those fields are actively maintained.</li>
 <li>L’état natif des PR GitHub gère l’état de revue qui change rapidement : décision de revue, vérifications requises, possibilité de fusion, conflits et approbations obsolètes.</li>
 </ul>
 <p>Le tableau devrait réduire le travail des mainteneurs. Si un champ nécessite une maintenance manuelle après chaque push de PR ou chaque revue, préférez plutôt les labels, les jalons ou l’état natif de GitHub.</p>
+<p>Labels can suggest likely ownership, but they are not ownership. A <code>channel:*</code>, <code>provider:*</code>, <code>tool:*</code>, <code>security:*</code>, or <code>docs</code> label identifies the surface that probably needs attention. Contributor-visible owner-source rules live in the <a href="./pr-workflow.html#project-board-contract">Project board contract</a>.</p>
+<p>Use assignees for active work. Use area stewardship for routing responsibility when nobody is implementing yet. The <a href="./pr-workflow.html#issue-ownership-path">Project board contract</a> defines the accepted owner sources and routing outcomes.</p>
 <h2 id="orthographe-canonique"><a class="header" href="#orthographe-canonique">Orthographe canonique</a></h2>
 <p>Utilisez l’orthographe active sans espace du module pour les libellés de module à portée : <code>provider:openai</code>, <code>channel:telegram</code>, <code>tool:shell</code>, <code>security:policy</code>, et libellés similaires. Les familles size et risk conservent intentionnellement un espace après les deux-points : <code>size: XS</code>, <code>risk: low</code>, <code>risk: medium</code>, <code>risk: high</code>.</p>
 <p>Les libellés en double hérités tels que <code>provider: openai</code>, <code>channel: telegram</code> ou <code>tool: shell</code> sont candidats au nettoyage. Migrez les issues/PRs ouvertes vers l’orthographe canonique sans espace avant suppression. Ne supprimez pas les libellés avec des références ouvertes, ne renommez pas largement les familles de libellés, et ne retirez pas les libellés de stale-policy sans une décision du mainteneur pour ce lot de nettoyage.</p>
@@ -435,7 +437,7 @@
 <tr><td><code>status:bloqué</code></td><td>Le travail est valide mais en attente d’une dépendance externe, d’une décision du mainteneur ou d’un prérequis lié. Exempté du statut « obsolète » tant que le bloqueur est enregistré et non résolu. Ne pas associer à <code>status:no-stale</code> pour le même bloqueur.</td></tr>
 <tr><td><code>status:en-cours</code></td><td>Une PR ouverte cible activement ce problème. Réconcilier avec l’état actuel de la PR lors des passes d’obsolescence ; le label n’est pas une exemption permanente après la fermeture de la PR.</td></tr>
 <tr><td><code>status:stale</code></td><td>Aucune activité de l’auteur pendant la période d’inactivité ; peut être fermé s’il n’est pas actualisé</td></tr>
-<tr><td><code>status:no-stale</code></td><td>Exemption explicite de péremption pour les travaux acceptés ou autrement à long terme qui ne sont pas déjà protégés par une autre exclusion de péremption. À utiliser uniquement lorsqu’un commentaire de mainteneur, le corps d’un ticket ou une entrée de suivi indique pourquoi le ticket doit rester ouvert.</td></tr>
+<tr><td><code>status:no-stale</code></td><td>Explicit stale exemption for accepted or otherwise long-lived work that is not already protected by another stale exclusion. Target policy: use only when the <a href="./pr-workflow.html#issue-ownership-path">Project board contract</a> has a contributor-visible stale-exemption reason and owner path. Existing exemptions missing those facts should be audited and repaired before stale sweeps stop honoring them.</td></tr>
 </tbody>
 </table>
 </div>

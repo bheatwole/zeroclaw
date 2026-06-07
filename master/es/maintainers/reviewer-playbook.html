@@ -37,7 +37,7 @@
             const path_to_root = "../";
             const default_light_theme = "default-dark";
             const default_dark_theme = "default-dark";
-            window.path_to_searchindex_js = "../searchindex-57e8c5cc.js";
+            window.path_to_searchindex_js = "../searchindex-618fac54.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-377ab6ef.js"></script>
@@ -292,12 +292,13 @@
 <tr><td><code>status:accepted</code></td><td>El equipo ha aceptado el RFC o elemento de trabajo. Agrega <code>status:no-stale</code> solo cuando el problema también necesite protección contra obsolescencia.</td></tr>
 <tr><td><code>status:blocked</code></td><td>El trabajo válido está a la espera de una dependencia externa, una decisión del responsable o un prerrequisito vinculado. Registra el bloqueo; esto solo es protección contra obsolescencia mientras dicho bloqueo permanezca sin resolver.</td></tr>
 <tr><td><code>status:en-progreso</code></td><td>Un PR abierto está abordando activamente el issue. Vuelve a comprobar el estado en vivo del PR antes de basarte en él durante los pases de obsolescencia.</td></tr>
-<tr><td><code>status:no-stale</code></td><td>El trabajo aceptado o de larga duración debe permanecer abierto y no estar ya protegido por otra exclusión de inactividad. Registra el motivo en un comentario del mantenedor, en el cuerpo del issue o en una entrada del rastreador.</td></tr>
+<tr><td><code>status:no-stale</code></td><td>Accepted or otherwise long-lived work should stay open and is not already protected by another stale exclusion. Record the reason and active owner or steward path using the contributor-visible owner sources in the <a href="./pr-workflow.html#issue-ownership-path">Project board contract</a>.</td></tr>
 <tr><td><code>good first issue</code></td><td>XS/S, trabajo autónomo y documentado con criterios de aceptación claros, enlaces a código o documentación relevantes, un mentor o contacto designado, y bajo riesgo de incorporación.</td></tr>
 <tr><td><code>help wanted</code></td><td>Trabajo accionable y desbloqueado para el que los mantenedores quieren ayuda externa y que pueden revisar. No lo uses como marcador genérico de tareas válidas o sin asignar.</td></tr>
 </tbody>
 </table>
 </div>
+<p>Assignee means active work. Area steward means responsibility for the next issue-routing decision when no implementer is active. The <a href="./pr-workflow.html#issue-ownership-path">Project board contract</a> defines the accepted owner sources and routing outcomes. Labels can identify the likely area, but labels alone are not an owner source.</p>
 <h3 id="etiquetas-de-resolución"><a class="header" href="#etiquetas-de-resolución">Etiquetas de resolución</a></h3>
 <p>Use las etiquetas de resolución solo al cerrar o eliminar un elemento de la cola activa. Explican el resultado final; no reemplazan las etiquetas de ciclo de vida <code>status:*</code> en trabajo que debe permanecer abierto. La <a href="./labels.html#resolution-labels">guía de etiquetas</a> es la fuente de verdad para las definiciones actuales de etiquetas de resolución y las restricciones de migración.</p>
 <p>Para los duplicados, enlaza el destino canónico antes de cerrar o redirigir la discusión. Para los informes no válidos, explica qué hace que el informe no sea accionable o a dónde debería dirigirse en su lugar. Para el trabajo que explícitamente decidimos no abordar, usa la ruta <code>Won't Do</code> a nivel de tablero / <code>wontfix</code> en vivo y deja una breve justificación.</p>
@@ -331,7 +332,7 @@
 <p>Esto mantiene baja la pérdida de contexto y evita que el siguiente revisor vuelva a realizar las mismas consultas que ya hiciste.</p>
 <h2 id="limpieza-semanal-de-la-cola"><a class="header" href="#limpieza-semanal-de-la-cola">Limpieza semanal de la cola</a></h2>
 <ul>
-<li>Recorre la cola de elementos obsoletos. Aplica <code>status:no-stale</code> únicamente cuando el trabajo aceptado o de larga duración tenga un motivo registrado para permanecer abierto y no esté ya protegido por otra exclusión de obsolescencia.</li>
+<li>Walk the stale queue. Apply <code>status:no-stale</code> only when accepted or otherwise long-lived work has a recorded reason to stay open, a visible active owner or steward path, and no other stale exclusion already applies. Until the stale-exemption audit lands, treat existing <code>status:no-stale</code> issues missing those facts as audit findings rather than automatic stale candidates.</li>
 <li>Prioriza primero los PRs de errores y seguridad con <code>tamaño: XS/S</code>.</li>
 <li>Convierte las preguntas recurrentes de soporte en mejoras de documentación y directrices para respuestas automáticas.</li>
 </ul>

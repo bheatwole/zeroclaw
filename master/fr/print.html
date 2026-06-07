@@ -38,7 +38,7 @@
             const path_to_root = "";
             const default_light_theme = "default-dark";
             const default_dark_theme = "default-dark";
-            window.path_to_searchindex_js = "searchindex-41030cb5.js";
+            window.path_to_searchindex_js = "searchindex-70ed6cb6.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-eebe6d87.js"></script>
@@ -14648,14 +14648,14 @@ relates-to:
 </thead>
 <tbody>
 <tr><td>Étiquettes</td><td>classification durable : type, portée, risque, taille, niveau de contributeur, politique de mise au rebut/triage</td><td>état de revue par push, statut CI actif, listes de tâches personnelles</td></tr>
-<tr><td>Tableau de projet</td><td>état de planification : préparation, propriétaire actif, regroupement de la feuille de route, état de dépendance/blocage, motif d’exemption d’obsolescence lorsqu’un champ existe</td><td>file d’attente de revue de PR de référence, fusionnabilité, vérifications requises</td></tr>
+<tr><td>Tableau de projet</td><td>planning state: readiness, active owner or steward path, roadmap grouping, dependency/blocker state, stale-exemption reason when a field exists</td><td>file d’attente de revue de PR de référence, fusionnabilité, vérifications requises</td></tr>
 <tr><td>État de la PR native</td><td>décision de révision, vérifications requises, fraîcheur de la branche, conflits, fusionnabilité, état brouillon/prêt</td><td>responsabilité de la feuille de route à long terme</td></tr>
 <tr><td>Issues/RFC</td><td>enregistrement durable des discussions, état d’acceptation, besoin utilisateur, traçabilité de l’implémentation liée</td><td>remplacement en direct de la documentation du mainteneur après promotion de la politique</td></tr>
 </tbody>
 </table>
 </div>
 <p>Les couloirs de PR, les libellés contributor-pickup, les libellés stale-exemption et la migration des libellés sont des concepts de gouvernance durables, mais leurs critères opérationnels précis figurent dans la documentation des mainteneurs. FND-003 régit la répartition : les libellés classifient le travail durable, les tableaux de projet planifient le travail, l’état natif des PR gère l’état actif de revue et de fusion, et les issues/RFC conservent les décisions. Le <a href="#pr-lanes">workflow de PR des mainteneurs</a> régit les définitions des couloirs de PR, le <a href="#étiquettes">guide des libellés</a> régit la signification exacte des libellés et les règles de nettoyage, et le <a href="#issue-triage">manuel du relecteur</a> régit la façon dont les relecteurs appliquent ces signaux lors du tri et de la revue. Traitez la migration active des libellés comme un nettoyage distinct approuvé par les mainteneurs, et non comme une revue de PR ordinaire.</p>
-<p>Les exemptions d’obsolescence sont des exceptions de gouvernance, et non des boucliers de label permanents. La politique cible veut que <code>status:no-stale</code> ne soit valide que lorsque la source opérationnelle de la voie enregistre à la fois pourquoi le ticket est exempté et qui en est responsable. La documentation des mainteneurs définit où ces informations résident et comment l’automatisation d’obsolescence ou les balayages d’obsolescence appliquent cette règle.</p>
+<p>Stale exemptions are governance exceptions, not permanent label shields. The target policy is that <code>status:no-stale</code> is valid only when the lane’s operational source records both why the issue is exempt and who owns the next movement. The maintainer docs define where those facts live and how stale automation or stale sweeps enforce the rule.</p>
 <hr>
 <h2 id="4-github-discussions--discussion-communautaire-et-transfert"><a class="header" href="#4-github-discussions--discussion-communautaire-et-transfert">4. GitHub Discussions : Discussion communautaire et transfert</a></h2>
 <h3 id="41-voie-des-discussions-maintenues"><a class="header" href="#41-voie-des-discussions-maintenues">4.1 Voie des discussions maintenues</a></h3>
@@ -15261,7 +15261,7 @@ corps:
 <tr><td><code>status:bloqué</code></td><td><code>#b60205</code> Rouge</td><td>En attente d’une dépendance externe non résolue enregistrée, d’une décision du mainteneur ou d’un prérequis lié</td></tr>
 <tr><td><code>status:en-cours</code></td><td><code>#0075ca</code> Bleu</td><td>L’PR ouverte cible activement le problème ; vérifier l’état actuel de la PR pendant les passes d’obsolescence</td></tr>
 <tr><td><code>status:stale</code></td><td><code>#e4e669</code> Jaune</td><td>Aucune activité de l’auteur d’origine pendant la période du seuil d’inactivité</td></tr>
-<tr><td><code>status:no-stale</code></td><td><code>#0e8a16</code> Vert</td><td>Exemption explicite d’obsolescence pour les travaux acceptés ou de longue durée ; la politique cible exige une raison enregistrée et un propriétaire actif dans la source opérationnelle</td></tr>
+<tr><td><code>status:no-stale</code></td><td><code>#0e8a16</code> Vert</td><td>Explicit stale exemption for accepted or otherwise long-lived work; target policy requires a recorded reason and active owner or steward path in the operational source</td></tr>
 <tr><td><code>status:besoin-d-aide</code></td><td><code>#059669</code> Vert</td><td>À la recherche d’un contributeur</td></tr>
 <tr><td><code>status:bonne-première-problématique</code></td><td><code>#059669</code> Vert</td><td>Convient aux nouveaux contributeurs</td></tr>
 <tr><td><code>status:discussion</code></td><td><code>#a78bfa</code> Violet</td><td>Nécessite une discussion d’équipe avant le début du travail</td></tr>
@@ -15329,7 +15329,7 @@ corps:
 <p><strong>Demande automatique de revue CODEOWNERS (intégrée à CODEOWNERS — aucune Action requise) :</strong></p>
 <p>GitHub applique automatiquement CODEOWNERS lorsque le fichier existe et que la protection de branche l’exige. Aucune action requise.</p>
 <p><strong>Gestion des issues périmées (<code>.github/workflows/stale.yml</code>) :</strong></p>
-<p>Les tickets sans activité pendant 45 jours reçoivent le label <code>status:stale</code> et un commentaire est publié pour demander si le ticket est toujours pertinent. Les tickets sans activité pendant 15 jours après l’application du label « stale » sont fermés. Cela évite que le backlog n’accumule des centaines de tickets vieux de plusieurs mois et qui ne sont plus pertinents. Exclure <code>priority:p0</code>, <code>type:rfc</code>, les tickets ayant des PR liées ouvertes, et les tickets avec <code>status:blocked</code> tant qu’un bloqueur enregistré reste non résolu. Le suivi prévu pour <code>status:no-stale</code> consiste à l’exclure uniquement tant que la source opérationnelle enregistre à la fois le motif d’exemption « stale » et le responsable actif. Le guide des labels des mainteneurs et le protocole de triage des tickets contiennent les détails opérationnels actuels.</p>
+<p>Issues with no activity for 45 days are labeled <code>status:stale</code> and a comment is posted asking if the issue is still relevant. Issues with no activity for 15 days after the stale label is applied are closed. This prevents the backlog from accumulating hundreds of issues that are months old and no longer relevant. Exclude <code>priority:p0</code>, <code>type:rfc</code>, issues with open linked PRs, and issues with <code>status:blocked</code> while a recorded blocker remains unresolved. The intended <code>status:no-stale</code> follow-up is to exclude it only while the operational source records both the stale-exemption reason and a contributor-visible active owner or steward path. The maintainer label guide and issue-triage protocol carry the current operational details.</p>
 <p><strong>Étiquetage de la taille des PR (<code>.github/workflows/pr-size.yml</code>) :</strong></p>
 <p>Étiquetez automatiquement les PR avec <code>size:xs</code> à <code>size:xl</code> en fonction du nombre de lignes modifiées. Cela donne aux réviseurs et aux mainteneurs une idée immédiate de l’étendue sans avoir à ouvrir le diff. Utilisez ces seuils comme point de départ : XS &lt; 10 lignes, S &lt; 50, M &lt; 250, L &lt; 1000, XL ≥ 1000.</p>
 <p><strong>Vérification de l’étape clé lors de la fusion de la PR (<code>.github/workflows/milestone-check.yml</code>) :</strong></p>
@@ -17773,6 +17773,34 @@ gh api repos/zeroclaw-labs/zeroclaw/actions/permissions/selected-actions
 <p>Un résumé JSON provisoire de cette répartition de planification se trouve dans <a href="maintainers/project-board-contract.json"><code>project-board-contract.json</code></a>. Considérez-le comme une entrée de conception pour la future automatisation d’actualisation du tableau, et non comme une intégration active à GitHub Project pour l’instant.</p>
 <p>Ne répliquez pas l’état de revue natif des PR dans les voies de tableau manuelles. L’état de PR GitHub gère la décision de revue, les vérifications requises, la possibilité de fusion, les conflits, les approbations obsolètes et la disponibilité pour la fusion. Si le tableau affiche par la suite un routage de PR dérivé tel que <code>DIRTY</code>, <code>BEHIND</code> ou <code>APPROVED</code>, traitez-le comme une vue tableau de bord de l’état GitHub, et non comme une source de vérité distincte.</p>
 <p>Cela permet de conserver l’utilité du tableau sans demander aux mainteneurs de le mettre à jour après chaque push, revue ou exécution CI.</p>
+<h3 id="issue-ownership-path"><a class="header" href="#issue-ownership-path">Issue ownership path</a></h3>
+<p>Issues need an ownership path before they can safely stay accepted, in progress, or stale-exempt for long periods. PRs have CODEOWNERS and requested reviewers; issues need an equivalent routing contract for the next triage decision.</p>
+<p>Use these meanings consistently:</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Signal</th><th>Means</th><th>Does not mean</th></tr>
+</thead>
+<tbody>
+<tr><td>Assigné</td><td>Someone is actively implementing, investigating, or shepherding the immediate work.</td><td>Permanent area ownership or passive responsibility for every related issue.</td></tr>
+<tr><td>Area steward</td><td>A maintainer or documented steward surface owns the next routing decision: clarify, accept, close, defer, or identify the next implementation path.</td><td>Automatic implementation ownership.</td></tr>
+<tr><td>Project active owner</td><td>The board-visible person or steward source currently responsible for the next movement.</td><td>A replacement for live PR review state.</td></tr>
+<tr><td>Étiquettes</td><td>Durable classification and likely area routing.</td><td>Ownership by themselves.</td></tr>
+</tbody>
+</table>
+</div>
+<p>Area stewardship is the issue-side analogue to CODEOWNERS, but it is not implemented through CODEOWNERS. If GitHub issue fields are enabled and visible to the public on the issue page, prefer a Public issue field for <code>Area steward</code> or <code>Owner path</code>. Organization-only or private issue and Project fields do not satisfy contributor-visible ownership. Otherwise, the contributor-visible source can be a maintained steward table, a public Project field, an issue-visible maintainer comment, or a public tracker entry linked from the issue.</p>
+<p>Identifying the next implementation path does not mean the steward must personally implement the issue or guarantee staffing. It means they make the next step explicit: assign an active owner, make the issue contributor-ready, route it to a tracker or milestone, schedule it for maintainer triage, or close/defer it with a recorded rationale.</p>
+<p>Stewardship is decision ownership, not indefinite delivery ownership. A stewarded issue should not sit in an “owned” limbo; the next visible update should record one of the outcomes above or name the decision needed.</p>
+<p>Scheduling an issue for maintainer triage is valid only when the issue records what decision is needed, where that decision will be tracked, and when it will be revisited. After that triage pass, replace the triage routing with an active owner, contributor-ready scope, tracker or milestone route, blocked/deferred state, or closure rationale.</p>
+<p>For accepted or protected issues, prefer one of these visible owner sources before adding or keeping <code>status:no-stale</code>:</p>
+<ul>
+<li>an assignee doing active work;</li>
+<li>a Public issue field, issue comment, or body section naming the steward path;</li>
+<li>a public Project active-owner or area-steward field;</li>
+<li>a linked public tracker entry that names the steward or owner source.</li>
+</ul>
+<p>If none of those exists, the issue can still stay open while triage continues, but it should not rely on <code>status:no-stale</code> as a permanent shield. Until the stale-exemption audit lands, missing reason or owner evidence is an audit finding and proposed correction, not an automatic stale-closure trigger.</p>
 <h2 id="voies-de-pr"><a class="header" href="#voies-de-pr">Voies de PR</a></h2>
 <p>Les couloirs de PR sont des attentes d’acheminement, pas une nouvelle famille d’étiquettes obligatoires. Utilisez-les pour décider du niveau de profondeur de revue, de séquencement et d’attention des mainteneurs dont une PR a besoin. CODEOWNERS, l’état de revue natif de GitHub, la CI, les étiquettes, les tickets liés et les mots-clés de relation explicites continuent de porter les véritables données d’acheminement.</p>
 <div class="table-wrapper">
@@ -17860,7 +17888,7 @@ gh api repos/zeroclaw-labs/zeroclaw/actions/permissions/selected-actions
 <ul>
 <li>Premier objectif de triage par le mainteneur principal : <strong>dans les 48 heures</strong>.</li>
 <li>Les PRs bloquées reçoivent un seul commentaire avec une liste d’actions à effectuer, et non une série de revues partielles.</li>
-<li><code>status:no-stale</code> est réservé au travail accepté ou ayant une longue durée de vie avec une raison enregistrée de rester ouvert lorsque le ticket n’est pas déjà protégé par une autre exclusion d’obsolescence.</li>
+<li><code>status:no-stale</code> is reserved for accepted or otherwise long-lived work with a recorded stale-exemption reason and contributor-visible active owner or steward path when the issue is not already protected by another stale exclusion. Existing exemptions missing those facts are audit findings until the stale-exemption repair packet lands.</li>
 </ul>
 <p>Pour les travaux empilés, exigez un <code>Depends on #...</code> explicite afin que l’ordre de révision soit déterministe.</p>
 <p>Pour les remplacements, exigez explicitement <code>Supersedes #...</code>. Consultez <a href="#prs-qui-remplacent">Les PRs de remplacement</a> pour les règles d’attribution et de modèle.</p>
@@ -17986,12 +18014,13 @@ gh api repos/zeroclaw-labs/zeroclaw/actions/permissions/selected-actions
 <tr><td><code>status:accepté</code></td><td>L’équipe a accepté la RFC ou l’élément de travail. Ajoutez <code>status:no-stale</code> uniquement lorsque le problème nécessite également une protection contre l’obsolescence.</td></tr>
 <tr><td><code>status:bloqué</code></td><td>Un travail valide est en attente d’une dépendance externe, d’une décision du mainteneur ou d’un prérequis lié. Notez le bloqueur ; il s’agit uniquement d’une protection contre l’obsolescence tant que ce bloqueur n’est pas résolu.</td></tr>
 <tr><td><code>status:en-cours</code></td><td>Une PR ouverte cible activement le ticket. Vérifiez à nouveau l’état actuel de la PR avant de vous y fier lors des passes d’obsolescence.</td></tr>
-<tr><td><code>status:no-stale</code></td><td>Le travail accepté ou destiné à perdurer doit rester ouvert et n’est pas déjà protégé par une autre exclusion d’inactivité. Indiquez la raison dans un commentaire de mainteneur, le corps de l’issue ou une entrée du suivi.</td></tr>
+<tr><td><code>status:no-stale</code></td><td>Accepted or otherwise long-lived work should stay open and is not already protected by another stale exclusion. Record the reason and active owner or steward path using the contributor-visible owner sources in the <a href="#issue-ownership-path">Project board contract</a>.</td></tr>
 <tr><td><code>good first issue</code></td><td>XS/S, travail autonome et documenté avec des critères d’acceptation clairs, des liens pertinents vers le code ou la documentation, un mentor ou contact désigné, et un faible risque d’intégration.</td></tr>
 <tr><td><code>help wanted</code></td><td>Tâche réalisable et débloquée pour laquelle les mainteneurs souhaitent une aide externe et qu’ils peuvent examiner. Ne l’utilisez pas comme marqueur générique de validité ou d’absence de propriétaire.</td></tr>
 </tbody>
 </table>
 </div>
+<p>Assignee means active work. Area steward means responsibility for the next issue-routing decision when no implementer is active. The <a href="#issue-ownership-path">Project board contract</a> defines the accepted owner sources and routing outcomes. Labels can identify the likely area, but labels alone are not an owner source.</p>
 <h3 id="étiquettes-de-résolution"><a class="header" href="#étiquettes-de-résolution">Étiquettes de résolution</a></h3>
 <p>Utilisez les étiquettes de résolution uniquement lors de la fermeture ou de la suppression d’un élément de la file d’attente active. Elles expliquent le résultat final ; elles ne remplacent pas les étiquettes de cycle de vie <code>status:*</code> sur les travaux qui doivent rester ouverts. Le <a href="#resolution-labels">guide des étiquettes</a> fait foi pour les définitions actuelles des étiquettes de résolution et les restrictions de migration.</p>
 <p>Pour les doublons, indiquez la cible canonique avant de fermer ou de rediriger la discussion. Pour les rapports invalides, expliquez ce qui rend le rapport inexploitable ou vers où il devrait être dirigé. Pour le travail que nous choisissons explicitement de ne pas poursuivre, utilisez le chemin <code>Won't Do</code> au niveau du tableau / <code>wontfix</code> en direct et laissez une brève justification.</p>
@@ -18025,7 +18054,7 @@ gh api repos/zeroclaw-labs/zeroclaw/actions/permissions/selected-actions
 <p>Cela permet de minimiser la perte de contexte et d’éviter que le prochain réviseur ne refasse les mêmes requêtes que vous avez déjà effectuées.</p>
 <h2 id="hygiène-de-la-file-dattente-hebdomadaire"><a class="header" href="#hygiène-de-la-file-dattente-hebdomadaire">Hygiène de la file d’attente hebdomadaire</a></h2>
 <ul>
-<li>Parcourez la file d’attente des éléments obsolètes. Appliquez <code>status:no-stale</code> uniquement lorsqu’un travail accepté ou autrement de longue durée a une raison enregistrée de rester ouvert et n’est pas déjà protégé par une autre exclusion d’obsolescence.</li>
+<li>Walk the stale queue. Apply <code>status:no-stale</code> only when accepted or otherwise long-lived work has a recorded reason to stay open, a visible active owner or steward path, and no other stale exclusion already applies. Until the stale-exemption audit lands, treat existing <code>status:no-stale</code> issues missing those facts as audit findings rather than automatic stale candidates.</li>
 <li>Priorisez les PR de correction de bugs et de sécurité avec la taille <code>XS/S</code> en premier.</li>
 <li>Transformer les questions récurrentes de support en améliorations de la documentation et en conseils pour les réponses automatiques.</li>
 </ul>
@@ -18045,10 +18074,12 @@ gh api repos/zeroclaw-labs/zeroclaw/actions/permissions/selected-actions
 <p>Conservez la séparation basée sur la fréquence de mise à jour :</p>
 <ul>
 <li>Les étiquettes portent leur propre classification durable : type de travail, périmètre/composant, risque de revue, taille de PR mesurée et exemption d’obsolescence.</li>
-<li>Les champs du tableau de projet conviennent pour l’étape de planification d’un ticket, le propriétaire actif, l’état des dépendances et le regroupement de la feuille de route lorsque ces champs sont activement maintenus.</li>
+<li>Project board fields are appropriate for issue planning stage, active owner or steward path, dependency state, stale-exemption reason, and roadmap grouping when those fields are actively maintained.</li>
 <li>L’état natif des PR GitHub gère l’état de revue qui change rapidement : décision de revue, vérifications requises, possibilité de fusion, conflits et approbations obsolètes.</li>
 </ul>
 <p>Le tableau devrait réduire le travail des mainteneurs. Si un champ nécessite une maintenance manuelle après chaque push de PR ou chaque revue, préférez plutôt les labels, les jalons ou l’état natif de GitHub.</p>
+<p>Labels can suggest likely ownership, but they are not ownership. A <code>channel:*</code>, <code>provider:*</code>, <code>tool:*</code>, <code>security:*</code>, or <code>docs</code> label identifies the surface that probably needs attention. Contributor-visible owner-source rules live in the <a href="#project-board-contract">Project board contract</a>.</p>
+<p>Use assignees for active work. Use area stewardship for routing responsibility when nobody is implementing yet. The <a href="#issue-ownership-path">Project board contract</a> defines the accepted owner sources and routing outcomes.</p>
 <h2 id="orthographe-canonique"><a class="header" href="#orthographe-canonique">Orthographe canonique</a></h2>
 <p>Utilisez l’orthographe active sans espace du module pour les libellés de module à portée : <code>provider:openai</code>, <code>channel:telegram</code>, <code>tool:shell</code>, <code>security:policy</code>, et libellés similaires. Les familles size et risk conservent intentionnellement un espace après les deux-points : <code>size: XS</code>, <code>risk: low</code>, <code>risk: medium</code>, <code>risk: high</code>.</p>
 <p>Les libellés en double hérités tels que <code>provider: openai</code>, <code>channel: telegram</code> ou <code>tool: shell</code> sont candidats au nettoyage. Migrez les issues/PRs ouvertes vers l’orthographe canonique sans espace avant suppression. Ne supprimez pas les libellés avec des références ouvertes, ne renommez pas largement les familles de libellés, et ne retirez pas les libellés de stale-policy sans une décision du mainteneur pour ce lot de nettoyage.</p>
@@ -18263,7 +18294,7 @@ gh api repos/zeroclaw-labs/zeroclaw/actions/permissions/selected-actions
 <tr><td><code>status:bloqué</code></td><td>Le travail est valide mais en attente d’une dépendance externe, d’une décision du mainteneur ou d’un prérequis lié. Exempté du statut « obsolète » tant que le bloqueur est enregistré et non résolu. Ne pas associer à <code>status:no-stale</code> pour le même bloqueur.</td></tr>
 <tr><td><code>status:en-cours</code></td><td>Une PR ouverte cible activement ce problème. Réconcilier avec l’état actuel de la PR lors des passes d’obsolescence ; le label n’est pas une exemption permanente après la fermeture de la PR.</td></tr>
 <tr><td><code>status:stale</code></td><td>Aucune activité de l’auteur pendant la période d’inactivité ; peut être fermé s’il n’est pas actualisé</td></tr>
-<tr><td><code>status:no-stale</code></td><td>Exemption explicite de péremption pour les travaux acceptés ou autrement à long terme qui ne sont pas déjà protégés par une autre exclusion de péremption. À utiliser uniquement lorsqu’un commentaire de mainteneur, le corps d’un ticket ou une entrée de suivi indique pourquoi le ticket doit rester ouvert.</td></tr>
+<tr><td><code>status:no-stale</code></td><td>Explicit stale exemption for accepted or otherwise long-lived work that is not already protected by another stale exclusion. Target policy: use only when the <a href="#issue-ownership-path">Project board contract</a> has a contributor-visible stale-exemption reason and owner path. Existing exemptions missing those facts should be audited and repaired before stale sweeps stop honoring them.</td></tr>
 </tbody>
 </table>
 </div>

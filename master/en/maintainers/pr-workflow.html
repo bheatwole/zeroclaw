@@ -37,7 +37,7 @@
             const path_to_root = "../";
             const default_light_theme = "default-dark";
             const default_dark_theme = "default-dark";
-            window.path_to_searchindex_js = "../searchindex-f96fa679.js";
+            window.path_to_searchindex_js = "../searchindex-b0601596.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-475fae1a.js"></script>
@@ -228,6 +228,34 @@
 <p>A draft JSON summary of this planning split lives in <a href="./project-board-contract.json"><code>project-board-contract.json</code></a>. Treat it as design input for future board refresh automation, not as an active GitHub Project integration yet.</p>
 <p>Do not mirror native PR review state into manual board lanes. GitHub PR state owns review decision, required checks, mergeability, conflicts, stale approvals, and merge readiness. If the board later displays derived PR routing such as <code>DIRTY</code>, <code>BEHIND</code>, or <code>APPROVED</code>, treat it as a dashboard view of GitHub state, not a separate source of truth.</p>
 <p>This keeps the board useful without asking maintainers to update it after every push, review, or CI run.</p>
+<h3 id="issue-ownership-path"><a class="header" href="#issue-ownership-path">Issue ownership path</a></h3>
+<p>Issues need an ownership path before they can safely stay accepted, in progress, or stale-exempt for long periods. PRs have CODEOWNERS and requested reviewers; issues need an equivalent routing contract for the next triage decision.</p>
+<p>Use these meanings consistently:</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Signal</th><th>Means</th><th>Does not mean</th></tr>
+</thead>
+<tbody>
+<tr><td>Assignee</td><td>Someone is actively implementing, investigating, or shepherding the immediate work.</td><td>Permanent area ownership or passive responsibility for every related issue.</td></tr>
+<tr><td>Area steward</td><td>A maintainer or documented steward surface owns the next routing decision: clarify, accept, close, defer, or identify the next implementation path.</td><td>Automatic implementation ownership.</td></tr>
+<tr><td>Project active owner</td><td>The board-visible person or steward source currently responsible for the next movement.</td><td>A replacement for live PR review state.</td></tr>
+<tr><td>Labels</td><td>Durable classification and likely area routing.</td><td>Ownership by themselves.</td></tr>
+</tbody>
+</table>
+</div>
+<p>Area stewardship is the issue-side analogue to CODEOWNERS, but it is not implemented through CODEOWNERS. If GitHub issue fields are enabled and visible to the public on the issue page, prefer a Public issue field for <code>Area steward</code> or <code>Owner path</code>. Organization-only or private issue and Project fields do not satisfy contributor-visible ownership. Otherwise, the contributor-visible source can be a maintained steward table, a public Project field, an issue-visible maintainer comment, or a public tracker entry linked from the issue.</p>
+<p>Identifying the next implementation path does not mean the steward must personally implement the issue or guarantee staffing. It means they make the next step explicit: assign an active owner, make the issue contributor-ready, route it to a tracker or milestone, schedule it for maintainer triage, or close/defer it with a recorded rationale.</p>
+<p>Stewardship is decision ownership, not indefinite delivery ownership. A stewarded issue should not sit in an “owned” limbo; the next visible update should record one of the outcomes above or name the decision needed.</p>
+<p>Scheduling an issue for maintainer triage is valid only when the issue records what decision is needed, where that decision will be tracked, and when it will be revisited. After that triage pass, replace the triage routing with an active owner, contributor-ready scope, tracker or milestone route, blocked/deferred state, or closure rationale.</p>
+<p>For accepted or protected issues, prefer one of these visible owner sources before adding or keeping <code>status:no-stale</code>:</p>
+<ul>
+<li>an assignee doing active work;</li>
+<li>a Public issue field, issue comment, or body section naming the steward path;</li>
+<li>a public Project active-owner or area-steward field;</li>
+<li>a linked public tracker entry that names the steward or owner source.</li>
+</ul>
+<p>If none of those exists, the issue can still stay open while triage continues, but it should not rely on <code>status:no-stale</code> as a permanent shield. Until the stale-exemption audit lands, missing reason or owner evidence is an audit finding and proposed correction, not an automatic stale-closure trigger.</p>
 <h2 id="pr-lanes"><a class="header" href="#pr-lanes">PR lanes</a></h2>
 <p>PR lanes are routing expectations, not another required label family. Use them to decide how much review depth, sequencing, and maintainer attention a PR needs. CODEOWNERS, native GitHub review state, CI, labels, linked issues, and explicit relationship keywords still carry the actual routing data.</p>
 <div class="table-wrapper">
@@ -315,7 +343,7 @@
 <ul>
 <li>First maintainer triage target: <strong>within 48 hours</strong>.</li>
 <li>Blocked PRs get one actionable checklist comment, not a series of partial reviews.</li>
-<li><code>status:no-stale</code> is reserved for accepted or otherwise long-lived work with a recorded reason to stay open when the issue is not already protected by another stale exclusion.</li>
+<li><code>status:no-stale</code> is reserved for accepted or otherwise long-lived work with a recorded stale-exemption reason and contributor-visible active owner or steward path when the issue is not already protected by another stale exclusion. Existing exemptions missing those facts are audit findings until the stale-exemption repair packet lands.</li>
 </ul>
 <p>For stacked work, require explicit <code>Depends on #...</code> so review order is deterministic.</p>
 <p>For replacements, require explicit <code>Supersedes #...</code>. See <a href="./superseding.html">Superseding PRs</a> for attribution and template rules.</p>

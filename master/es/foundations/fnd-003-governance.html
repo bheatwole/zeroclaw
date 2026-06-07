@@ -37,7 +37,7 @@
             const path_to_root = "../";
             const default_light_theme = "default-dark";
             const default_dark_theme = "default-dark";
-            window.path_to_searchindex_js = "../searchindex-57e8c5cc.js";
+            window.path_to_searchindex_js = "../searchindex-618fac54.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-377ab6ef.js"></script>
@@ -440,14 +440,14 @@
 </thead>
 <tbody>
 <tr><td>Etiquetas</td><td>clasificación duradera: tipo, alcance, riesgo, tamaño, nivel de colaborador, política de inactividad/clasificación</td><td>estado de revisión por push, estado activo de CI, listas de tareas personales</td></tr>
-<tr><td>Tablero del proyecto</td><td>estado de planificación: preparación, propietario activo, agrupación de hoja de ruta, estado de dependencia/bloqueo, motivo de exención por obsolescencia cuando existe un campo</td><td>cola de revisión de PR autorizada, fusionabilidad, comprobaciones requeridas</td></tr>
+<tr><td>Tablero del proyecto</td><td>planning state: readiness, active owner or steward path, roadmap grouping, dependency/blocker state, stale-exemption reason when a field exists</td><td>cola de revisión de PR autorizada, fusionabilidad, comprobaciones requeridas</td></tr>
 <tr><td>Estado nativo del PR</td><td>decisión de revisión, comprobaciones requeridas, actualización de la rama, conflictos, posibilidad de fusión, estado borrador/listo</td><td>propiedad de la hoja de ruta a largo plazo</td></tr>
 <tr><td>Issues/RFCs</td><td>registro de discusión duradero, estado de aceptación, necesidad del usuario, traza de implementación vinculada</td><td>reemplazo en vivo para la documentación de mantenedores tras la promoción de la política</td></tr>
 </tbody>
 </table>
 </div>
 <p>Los carriles de PR, las etiquetas de asignación a colaboradores, las etiquetas de exención por inactividad y la migración de etiquetas son conceptos de gobernanza duraderos, pero sus criterios operativos exactos residen en la documentación de los mantenedores. FND-003 define la separación: las etiquetas clasifican el trabajo duradero, los tableros de proyecto planifican el trabajo, el estado nativo de los PR gestiona la revisión y el estado de fusión en vivo, y los issues/RFC preservan las decisiones. El <a href="../maintainers/pr-workflow.html#pr-lanes">flujo de trabajo de PR para mantenedores</a> define los carriles de PR, la <a href="../maintainers/labels.html">guía de etiquetas</a> define los significados exactos de las etiquetas y las reglas de limpieza, y el <a href="../maintainers/reviewer-playbook.html#issue-triage">manual del revisor</a> define cómo los revisores aplican esas señales durante la clasificación y la revisión. Considera la migración de etiquetas en vivo como una limpieza independiente aprobada por los mantenedores, no como una revisión de PR ordinaria.</p>
-<p>Las exenciones de inactividad son excepciones de gobernanza, no escudos de etiqueta permanentes. La política objetivo es que <code>status:no-stale</code> solo es válido cuando el registro de la fuente operativa del carril deja constancia tanto de por qué la incidencia está exenta como de quién es responsable de ella. La documentación para responsables del mantenimiento define dónde residen esos datos y cómo la automatización de inactividad o los barridos de inactividad aplican la regla.</p>
+<p>Stale exemptions are governance exceptions, not permanent label shields. The target policy is that <code>status:no-stale</code> is valid only when the lane’s operational source records both why the issue is exempt and who owns the next movement. The maintainer docs define where those facts live and how stale automation or stale sweeps enforce the rule.</p>
 <hr>
 <h2 id="4-github-discussions-discusión-de-la-comunidad-y-traspaso"><a class="header" href="#4-github-discussions-discusión-de-la-comunidad-y-traspaso">4. GitHub Discussions: Discusión de la comunidad y traspaso</a></h2>
 <h3 id="41-carril-de-discusiones-mantenidas"><a class="header" href="#41-carril-de-discusiones-mantenidas">4.1 Carril de Discusiones Mantenidas</a></h3>
@@ -1053,7 +1053,7 @@ cuerpo:
 <tr><td><code>status:blocked</code></td><td><code>#b60205</code> Rojo</td><td>A la espera de una dependencia externa registrada sin resolver, una decisión del responsable del mantenimiento o un requisito previo vinculado</td></tr>
 <tr><td><code>status:en-progreso</code></td><td><code>#0075ca</code> Azul</td><td>Un PR abierto está abordando activamente el issue; verifica el estado actual del PR durante los pases de inactividad</td></tr>
 <tr><td><code>status:stale</code></td><td><code>#e4e669</code> Amarillo</td><td>Sin actividad del autor original durante el periodo del umbral de inactividad</td></tr>
-<tr><td><code>status:no-stale</code></td><td><code>#0e8a16</code> Verde</td><td>Exención explícita de obsolescencia para trabajo aceptado o de larga duración; la política objetivo requiere una razón registrada y un propietario activo en la fuente operativa</td></tr>
+<tr><td><code>status:no-stale</code></td><td><code>#0e8a16</code> Verde</td><td>Explicit stale exemption for accepted or otherwise long-lived work; target policy requires a recorded reason and active owner or steward path in the operational source</td></tr>
 <tr><td><code>status:se-necesita-ayuda</code></td><td><code>#059669</code> Verde</td><td>Buscando un colaborador</td></tr>
 <tr><td><code>status:good-first-issue</code></td><td><code>#059669</code> Verde</td><td>Adecuado para nuevos colaboradores</td></tr>
 <tr><td><code>status:discussion</code></td><td><code>#a78bfa</code> Púrpura</td><td>Requiere discusión del equipo antes de comenzar el trabajo</td></tr>
@@ -1121,7 +1121,7 @@ cuerpo:
 <p><strong>Solicitud automática de revisión de CODEOWNERS (integrada en CODEOWNERS — no se requiere ninguna acción):</strong></p>
 <p>GitHub aplica automáticamente CODEOWNERS cuando el archivo existe y la protección de rama lo requiere. No se requiere ninguna acción.</p>
 <p><strong>Gestión de issues obsoletos (<code>.github/workflows/stale.yml</code>):</strong></p>
-<p>Las incidencias sin actividad durante 45 días se etiquetan como <code>status:stale</code> y se publica un comentario preguntando si la incidencia sigue siendo relevante. Las incidencias sin actividad durante 15 días tras aplicar la etiqueta stale se cierran. Esto evita que el backlog acumule cientos de incidencias con meses de antigüedad y que ya no son relevantes. Se excluyen <code>priority:p0</code>, <code>type:rfc</code>, las incidencias con PR vinculados abiertos y las incidencias con <code>status:blocked</code> mientras un bloqueante registrado siga sin resolverse. El seguimiento <code>status:no-stale</code> previsto consiste en excluirla solo mientras la fuente operativa registre tanto el motivo de exención de stale como el propietario activo. La guía de etiquetas para responsables y el protocolo de clasificación de incidencias contienen los detalles operativos actuales.</p>
+<p>Issues with no activity for 45 days are labeled <code>status:stale</code> and a comment is posted asking if the issue is still relevant. Issues with no activity for 15 days after the stale label is applied are closed. This prevents the backlog from accumulating hundreds of issues that are months old and no longer relevant. Exclude <code>priority:p0</code>, <code>type:rfc</code>, issues with open linked PRs, and issues with <code>status:blocked</code> while a recorded blocker remains unresolved. The intended <code>status:no-stale</code> follow-up is to exclude it only while the operational source records both the stale-exemption reason and a contributor-visible active owner or steward path. The maintainer label guide and issue-triage protocol carry the current operational details.</p>
 <p><strong>Etiquetado del tamaño de PR (<code>.github/workflows/pr-size.yml</code>):</strong></p>
 <p>Etiqueta automáticamente las PRs con <code>size:xs</code> hasta <code>size:xl</code> según las líneas modificadas. Esto proporciona a los revisores y mantenedores una idea inmediata del alcance sin necesidad de abrir el diff. Usa estos umbrales como punto de partida: XS &lt; 10 líneas, S &lt; 50, M &lt; 250, L &lt; 1000, XL ≥ 1000.</p>
 <p><strong>Verificación de hito al fusionar PR (<code>.github/workflows/milestone-check.yml</code>):</strong></p>

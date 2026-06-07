@@ -38,7 +38,7 @@
             const path_to_root = "";
             const default_light_theme = "default-dark";
             const default_dark_theme = "default-dark";
-            window.path_to_searchindex_js = "searchindex-f96fa679.js";
+            window.path_to_searchindex_js = "searchindex-b0601596.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-475fae1a.js"></script>
@@ -15329,14 +15329,14 @@ Follow-up work-lane and label-governance policy: <a href="https://github.com/zer
 </thead>
 <tbody>
 <tr><td>Labels</td><td>durable classification: type, scope, risk, size, contributor tier, stale/triage policy</td><td>per-push review state, active CI status, personal task lists</td></tr>
-<tr><td>Project board</td><td>planning state: readiness, active owner, roadmap grouping, dependency/blocker state, stale-exemption reason when a field exists</td><td>authoritative PR review queue, mergeability, required checks</td></tr>
+<tr><td>Project board</td><td>planning state: readiness, active owner or steward path, roadmap grouping, dependency/blocker state, stale-exemption reason when a field exists</td><td>authoritative PR review queue, mergeability, required checks</td></tr>
 <tr><td>Native PR state</td><td>review decision, required checks, branch freshness, conflicts, mergeability, draft/ready state</td><td>long-term roadmap ownership</td></tr>
 <tr><td>Issues/RFCs</td><td>durable discussion record, acceptance state, user need, linked implementation trail</td><td>live replacement for maintainer docs after policy promotion</td></tr>
 </tbody>
 </table>
 </div>
 <p>PR lanes, contributor-pickup labels, stale-exemption labels, and label migration are durable governance concepts, but their exact operational criteria live in maintainer docs. FND-003 owns the split: labels classify durable work, project boards plan work, native PR state owns live review and merge state, and issues/RFCs preserve decisions. The <a href="#pr-lanes">Maintainer PR workflow</a> owns PR lane definitions, the <a href="#labels">Labels guide</a> owns exact label meanings and cleanup rules, and the <a href="#issue-triage">Reviewer playbook</a> owns how reviewers apply those signals during triage and review. Treat live label migration as a separate maintainer-approved cleanup, not ordinary PR review.</p>
-<p>Stale exemptions are governance exceptions, not permanent label shields. The target policy is that <code>status:no-stale</code> is valid only when the lane’s operational source records both why the issue is exempt and who owns it. The maintainer docs define where those facts live and how stale automation or stale sweeps enforce the rule.</p>
+<p>Stale exemptions are governance exceptions, not permanent label shields. The target policy is that <code>status:no-stale</code> is valid only when the lane’s operational source records both why the issue is exempt and who owns the next movement. The maintainer docs define where those facts live and how stale automation or stale sweeps enforce the rule.</p>
 <hr>
 <h2 id="4-github-discussions-community-discussion-and-handoff"><a class="header" href="#4-github-discussions-community-discussion-and-handoff">4. GitHub Discussions: Community Discussion and Handoff</a></h2>
 <h3 id="41-maintained-discussions-lane"><a class="header" href="#41-maintained-discussions-lane">4.1 Maintained Discussions Lane</a></h3>
@@ -15942,7 +15942,7 @@ body:
 <tr><td><code>status:blocked</code></td><td><code>#b60205</code> Red</td><td>Waiting on a recorded unresolved external dependency, maintainer decision, or linked prerequisite</td></tr>
 <tr><td><code>status:in-progress</code></td><td><code>#0075ca</code> Blue</td><td>Open PR is actively targeting the issue; verify live PR state during stale passes</td></tr>
 <tr><td><code>status:stale</code></td><td><code>#e4e669</code> Yellow</td><td>No original-author activity for the stale threshold window</td></tr>
-<tr><td><code>status:no-stale</code></td><td><code>#0e8a16</code> Green</td><td>Explicit stale exemption for accepted or otherwise long-lived work; target policy requires a recorded reason and active owner in the operational source</td></tr>
+<tr><td><code>status:no-stale</code></td><td><code>#0e8a16</code> Green</td><td>Explicit stale exemption for accepted or otherwise long-lived work; target policy requires a recorded reason and active owner or steward path in the operational source</td></tr>
 <tr><td><code>status:help-wanted</code></td><td><code>#059669</code> Green</td><td>Looking for a contributor</td></tr>
 <tr><td><code>status:good-first-issue</code></td><td><code>#059669</code> Green</td><td>Suitable for new contributors</td></tr>
 <tr><td><code>status:discussion</code></td><td><code>#a78bfa</code> Purple</td><td>Needs team discussion before work begins</td></tr>
@@ -16010,7 +16010,7 @@ body:
 <p><strong>Auto-request CODEOWNERS review (built into CODEOWNERS — no Action needed):</strong></p>
 <p>GitHub enforces CODEOWNERS automatically when the file exists and branch protection requires it. No Action required.</p>
 <p><strong>Stale issue management (<code>.github/workflows/stale.yml</code>):</strong></p>
-<p>Issues with no activity for 45 days are labeled <code>status:stale</code> and a comment is posted asking if the issue is still relevant. Issues with no activity for 15 days after the stale label is applied are closed. This prevents the backlog from accumulating hundreds of issues that are months old and no longer relevant. Exclude <code>priority:p0</code>, <code>type:rfc</code>, issues with open linked PRs, and issues with <code>status:blocked</code> while a recorded blocker remains unresolved. The intended <code>status:no-stale</code> follow-up is to exclude it only while the operational source records both the stale-exemption reason and the active owner. The maintainer label guide and issue-triage protocol carry the current operational details.</p>
+<p>Issues with no activity for 45 days are labeled <code>status:stale</code> and a comment is posted asking if the issue is still relevant. Issues with no activity for 15 days after the stale label is applied are closed. This prevents the backlog from accumulating hundreds of issues that are months old and no longer relevant. Exclude <code>priority:p0</code>, <code>type:rfc</code>, issues with open linked PRs, and issues with <code>status:blocked</code> while a recorded blocker remains unresolved. The intended <code>status:no-stale</code> follow-up is to exclude it only while the operational source records both the stale-exemption reason and a contributor-visible active owner or steward path. The maintainer label guide and issue-triage protocol carry the current operational details.</p>
 <p><strong>PR size labeling (<code>.github/workflows/pr-size.yml</code>):</strong></p>
 <p>Automatically label PRs with <code>size:xs</code> through <code>size:xl</code> based on lines changed. This gives reviewers and maintainers an immediate sense of scope without opening the diff. Use these thresholds as a starting point: XS &lt; 10 lines, S &lt; 50, M &lt; 250, L &lt; 1000, XL ≥ 1000.</p>
 <p><strong>Milestone check on PR merge (<code>.github/workflows/milestone-check.yml</code>):</strong></p>
@@ -19083,6 +19083,34 @@ gh api repos/zeroclaw-labs/zeroclaw/actions/permissions/selected-actions
 <p>A draft JSON summary of this planning split lives in <a href="maintainers/project-board-contract.json"><code>project-board-contract.json</code></a>. Treat it as design input for future board refresh automation, not as an active GitHub Project integration yet.</p>
 <p>Do not mirror native PR review state into manual board lanes. GitHub PR state owns review decision, required checks, mergeability, conflicts, stale approvals, and merge readiness. If the board later displays derived PR routing such as <code>DIRTY</code>, <code>BEHIND</code>, or <code>APPROVED</code>, treat it as a dashboard view of GitHub state, not a separate source of truth.</p>
 <p>This keeps the board useful without asking maintainers to update it after every push, review, or CI run.</p>
+<h3 id="issue-ownership-path"><a class="header" href="#issue-ownership-path">Issue ownership path</a></h3>
+<p>Issues need an ownership path before they can safely stay accepted, in progress, or stale-exempt for long periods. PRs have CODEOWNERS and requested reviewers; issues need an equivalent routing contract for the next triage decision.</p>
+<p>Use these meanings consistently:</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Signal</th><th>Means</th><th>Does not mean</th></tr>
+</thead>
+<tbody>
+<tr><td>Assignee</td><td>Someone is actively implementing, investigating, or shepherding the immediate work.</td><td>Permanent area ownership or passive responsibility for every related issue.</td></tr>
+<tr><td>Area steward</td><td>A maintainer or documented steward surface owns the next routing decision: clarify, accept, close, defer, or identify the next implementation path.</td><td>Automatic implementation ownership.</td></tr>
+<tr><td>Project active owner</td><td>The board-visible person or steward source currently responsible for the next movement.</td><td>A replacement for live PR review state.</td></tr>
+<tr><td>Labels</td><td>Durable classification and likely area routing.</td><td>Ownership by themselves.</td></tr>
+</tbody>
+</table>
+</div>
+<p>Area stewardship is the issue-side analogue to CODEOWNERS, but it is not implemented through CODEOWNERS. If GitHub issue fields are enabled and visible to the public on the issue page, prefer a Public issue field for <code>Area steward</code> or <code>Owner path</code>. Organization-only or private issue and Project fields do not satisfy contributor-visible ownership. Otherwise, the contributor-visible source can be a maintained steward table, a public Project field, an issue-visible maintainer comment, or a public tracker entry linked from the issue.</p>
+<p>Identifying the next implementation path does not mean the steward must personally implement the issue or guarantee staffing. It means they make the next step explicit: assign an active owner, make the issue contributor-ready, route it to a tracker or milestone, schedule it for maintainer triage, or close/defer it with a recorded rationale.</p>
+<p>Stewardship is decision ownership, not indefinite delivery ownership. A stewarded issue should not sit in an “owned” limbo; the next visible update should record one of the outcomes above or name the decision needed.</p>
+<p>Scheduling an issue for maintainer triage is valid only when the issue records what decision is needed, where that decision will be tracked, and when it will be revisited. After that triage pass, replace the triage routing with an active owner, contributor-ready scope, tracker or milestone route, blocked/deferred state, or closure rationale.</p>
+<p>For accepted or protected issues, prefer one of these visible owner sources before adding or keeping <code>status:no-stale</code>:</p>
+<ul>
+<li>an assignee doing active work;</li>
+<li>a Public issue field, issue comment, or body section naming the steward path;</li>
+<li>a public Project active-owner or area-steward field;</li>
+<li>a linked public tracker entry that names the steward or owner source.</li>
+</ul>
+<p>If none of those exists, the issue can still stay open while triage continues, but it should not rely on <code>status:no-stale</code> as a permanent shield. Until the stale-exemption audit lands, missing reason or owner evidence is an audit finding and proposed correction, not an automatic stale-closure trigger.</p>
 <h2 id="pr-lanes"><a class="header" href="#pr-lanes">PR lanes</a></h2>
 <p>PR lanes are routing expectations, not another required label family. Use them to decide how much review depth, sequencing, and maintainer attention a PR needs. CODEOWNERS, native GitHub review state, CI, labels, linked issues, and explicit relationship keywords still carry the actual routing data.</p>
 <div class="table-wrapper">
@@ -19170,7 +19198,7 @@ gh api repos/zeroclaw-labs/zeroclaw/actions/permissions/selected-actions
 <ul>
 <li>First maintainer triage target: <strong>within 48 hours</strong>.</li>
 <li>Blocked PRs get one actionable checklist comment, not a series of partial reviews.</li>
-<li><code>status:no-stale</code> is reserved for accepted or otherwise long-lived work with a recorded reason to stay open when the issue is not already protected by another stale exclusion.</li>
+<li><code>status:no-stale</code> is reserved for accepted or otherwise long-lived work with a recorded stale-exemption reason and contributor-visible active owner or steward path when the issue is not already protected by another stale exclusion. Existing exemptions missing those facts are audit findings until the stale-exemption repair packet lands.</li>
 </ul>
 <p>For stacked work, require explicit <code>Depends on #...</code> so review order is deterministic.</p>
 <p>For replacements, require explicit <code>Supersedes #...</code>. See <a href="#superseding-prs">Superseding PRs</a> for attribution and template rules.</p>
@@ -19296,12 +19324,13 @@ gh api repos/zeroclaw-labs/zeroclaw/actions/permissions/selected-actions
 <tr><td><code>status:accepted</code></td><td>The team has accepted the RFC or work item. Add <code>status:no-stale</code> only when the issue also needs stale protection.</td></tr>
 <tr><td><code>status:blocked</code></td><td>Valid work is waiting on an external dependency, maintainer decision, or linked prerequisite. Record the blocker; this is stale protection only while that blocker remains unresolved.</td></tr>
 <tr><td><code>status:in-progress</code></td><td>An open PR is actively targeting the issue. Re-check live PR state before relying on it during stale passes.</td></tr>
-<tr><td><code>status:no-stale</code></td><td>Accepted or otherwise long-lived work should stay open and is not already protected by another stale exclusion. Record the reason in a maintainer comment, issue body, or tracker entry.</td></tr>
+<tr><td><code>status:no-stale</code></td><td>Accepted or otherwise long-lived work should stay open and is not already protected by another stale exclusion. Record the reason and active owner or steward path using the contributor-visible owner sources in the <a href="#issue-ownership-path">Project board contract</a>.</td></tr>
 <tr><td><code>good first issue</code></td><td>XS/S, self-contained, documented work with clear acceptance criteria, relevant code or docs links, a named mentor or contact, and low onboarding risk.</td></tr>
 <tr><td><code>help wanted</code></td><td>Actionable, unblocked work maintainers want external help on and can review. Do not use it as a generic valid/unowned marker.</td></tr>
 </tbody>
 </table>
 </div>
+<p>Assignee means active work. Area steward means responsibility for the next issue-routing decision when no implementer is active. The <a href="#issue-ownership-path">Project board contract</a> defines the accepted owner sources and routing outcomes. Labels can identify the likely area, but labels alone are not an owner source.</p>
 <h3 id="resolution-labels"><a class="header" href="#resolution-labels">Resolution labels</a></h3>
 <p>Use resolution labels only when closing or removing an item from the active queue. They explain the terminal outcome; they do not replace <code>status:*</code> lifecycle labels on work that should stay open. The <a href="#resolution-labels-1">labels guide</a> is the source of truth for current resolution-label definitions and migration holdbacks.</p>
 <p>For duplicates, link the canonical target before closing or redirecting discussion. For invalid reports, explain what makes the report unactionable or where it should go instead. For work we are explicitly choosing not to pursue, use the board-level <code>Won't Do</code> / live <code>wontfix</code> path and leave a brief rationale.</p>
@@ -19335,7 +19364,7 @@ gh api repos/zeroclaw-labs/zeroclaw/actions/permissions/selected-actions
 <p>This keeps context loss low and avoids the next reviewer redoing the same fetches you already did.</p>
 <h2 id="weekly-queue-hygiene"><a class="header" href="#weekly-queue-hygiene">Weekly queue hygiene</a></h2>
 <ul>
-<li>Walk the stale queue. Apply <code>status:no-stale</code> only when accepted or otherwise long-lived work has a recorded reason to stay open and is not already protected by another stale exclusion.</li>
+<li>Walk the stale queue. Apply <code>status:no-stale</code> only when accepted or otherwise long-lived work has a recorded reason to stay open, a visible active owner or steward path, and no other stale exclusion already applies. Until the stale-exemption audit lands, treat existing <code>status:no-stale</code> issues missing those facts as audit findings rather than automatic stale candidates.</li>
 <li>Prioritize <code>size: XS/S</code> bug and security PRs first.</li>
 <li>Convert recurring support questions into docs improvements and auto-response guidance.</li>
 </ul>
@@ -19359,10 +19388,12 @@ answer fast-moving review and merge questions.</p>
 <p>Keep the split based on update frequency:</p>
 <ul>
 <li>Labels own durable classification: work type, scope/component, review risk, measured PR size, and stale exemption.</li>
-<li>Project board fields are appropriate for issue planning stage, active owner, dependency state, and roadmap grouping when those fields are actively maintained.</li>
+<li>Project board fields are appropriate for issue planning stage, active owner or steward path, dependency state, stale-exemption reason, and roadmap grouping when those fields are actively maintained.</li>
 <li>Native GitHub PR state owns fast-changing review state: review decision, required checks, mergeability, conflicts, and stale approvals.</li>
 </ul>
 <p>The board should reduce maintainer work. If a field would need manual upkeep after every PR push or review, prefer labels, milestones, or native GitHub state instead.</p>
+<p>Labels can suggest likely ownership, but they are not ownership. A <code>channel:*</code>, <code>provider:*</code>, <code>tool:*</code>, <code>security:*</code>, or <code>docs</code> label identifies the surface that probably needs attention. Contributor-visible owner-source rules live in the <a href="#project-board-contract">Project board contract</a>.</p>
+<p>Use assignees for active work. Use area stewardship for routing responsibility when nobody is implementing yet. The <a href="#issue-ownership-path">Project board contract</a> defines the accepted owner sources and routing outcomes.</p>
 <h2 id="canonical-spelling"><a class="header" href="#canonical-spelling">Canonical spelling</a></h2>
 <p>Use the live no-space module spelling for scoped module labels: <code>provider:openai</code>, <code>channel:telegram</code>, <code>tool:shell</code>, <code>security:policy</code>, and similar labels. The size and risk families intentionally keep a space after the colon: <code>size: XS</code>, <code>risk: low</code>, <code>risk: medium</code>, <code>risk: high</code>.</p>
 <p>Legacy duplicate labels such as <code>provider: openai</code>, <code>channel: telegram</code>, or <code>tool: shell</code> are cleanup candidates. Migrate open issues/PRs to the canonical no-space spelling before deletion. Do not delete labels with open references, broadly rename label families, or remove stale-policy labels without a maintainer decision for that cleanup batch.</p>
@@ -19577,7 +19608,7 @@ answer fast-moving review and merge questions.</p>
 <tr><td><code>status:blocked</code></td><td>Work is valid but waiting on an external dependency, maintainer decision, or linked prerequisite. Exempt from stale while the blocker is recorded and unresolved. Do not pair with <code>status:no-stale</code> for the same blocker.</td></tr>
 <tr><td><code>status:in-progress</code></td><td>An open PR is actively targeting this issue. Reconcile against live PR state during stale passes; the label is not a permanent exemption after the PR closes.</td></tr>
 <tr><td><code>status:stale</code></td><td>No author activity for the stale window; may close if not refreshed</td></tr>
-<tr><td><code>status:no-stale</code></td><td>Explicit stale exemption for accepted or otherwise long-lived work that is not already protected by another stale exclusion. Use only when a maintainer comment, issue body, or tracker entry records why the issue should stay open.</td></tr>
+<tr><td><code>status:no-stale</code></td><td>Explicit stale exemption for accepted or otherwise long-lived work that is not already protected by another stale exclusion. Target policy: use only when the <a href="#issue-ownership-path">Project board contract</a> has a contributor-visible stale-exemption reason and owner path. Existing exemptions missing those facts should be audited and repaired before stale sweeps stop honoring them.</td></tr>
 </tbody>
 </table>
 </div>

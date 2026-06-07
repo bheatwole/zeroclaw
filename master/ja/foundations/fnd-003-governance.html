@@ -37,7 +37,7 @@
             const path_to_root = "../";
             const default_light_theme = "default-dark";
             const default_dark_theme = "default-dark";
-            window.path_to_searchindex_js = "../searchindex-2814a997.js";
+            window.path_to_searchindex_js = "../searchindex-03e0092e.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-560e5bce.js"></script>
@@ -440,14 +440,14 @@
 </thead>
 <tbody>
 <tr><td>ラベル</td><td>永続的な分類: type、scope、risk、size、contributor tier、stale/triage ポリシー</td><td>プッシュごとのレビュー状態、アクティブなCIステータス、個人のタスクリスト</td></tr>
-<tr><td>プロジェクトボード</td><td>計画状態: 準備状況、アクティブなオーナー、ロードマップのグループ化、依存関係/ブロッカーの状態、フィールドが存在する場合の陳腐化除外理由</td><td>権威あるPRレビューキュー、マージ可能性、必須チェック</td></tr>
+<tr><td>プロジェクトボード</td><td>planning state: readiness, active owner or steward path, roadmap grouping, dependency/blocker state, stale-exemption reason when a field exists</td><td>権威あるPRレビューキュー、マージ可能性、必須チェック</td></tr>
 <tr><td>ネイティブPRの状態</td><td>レビュー判定、必須チェック、ブランチの最新性、コンフリクト、マージ可否、ドラフト/レディ状態</td><td>長期的なロードマップのオーナーシップ</td></tr>
 <tr><td>課題/RFC</td><td>永続的なディスカッション記録、承認状態、ユーザーニーズ、リンクされた実装履歴</td><td>ポリシー昇格後のメンテナー向けドキュメントのライブ置換</td></tr>
 </tbody>
 </table>
 </div>
 <p>PRレーン、コントリビューター受け入れラベル、stale除外ラベル、ラベル移行は永続的なガバナンスの概念ですが、その正確な運用基準はメンテナードキュメントに記載されています。FND-003がこの役割分担を管理します。ラベルは永続的な作業を分類し、プロジェクトボードは作業を計画し、ネイティブのPRステートはライブレビューとマージの状態を管理し、issue/RFCは決定事項を保持します。<a href="../maintainers/pr-workflow.html#pr-lanes">メンテナーPRワークフロー</a>はPRレーンの定義を管理し、<a href="../maintainers/labels.html">ラベルガイド</a>はラベルの正確な意味とクリーンアップルールを管理し、<a href="../maintainers/reviewer-playbook.html#issue-triage">レビュアープレイブック</a>はレビュアーがトリアージとレビューの際にこれらのシグナルをどのように適用するかを管理します。ライブラベル移行は通常のPRレビューではなく、メンテナーが承認した別個のクリーンアップ作業として扱ってください。</p>
-<p>stale 除外はガバナンス上の例外であり、恒久的なラベルによる保護ではありません。対象ポリシーは、レーンの運用ソースに「なぜその issue が除外されているか」と「誰がそれを所有しているか」の両方が記録されている場合に限り、<code>status:no-stale</code> が有効になるというものです。メンテナー向けドキュメントでは、これらの事実がどこに存在するか、また stale 自動化や stale スイープがどのようにこのルールを適用するかを定義しています。</p>
+<p>Stale exemptions are governance exceptions, not permanent label shields. The target policy is that <code>status:no-stale</code> is valid only when the lane’s operational source records both why the issue is exempt and who owns the next movement. The maintainer docs define where those facts live and how stale automation or stale sweeps enforce the rule.</p>
 <hr>
 <h2 id="4-github-discussions-コミュニティでのディスカッションと引き継ぎ"><a class="header" href="#4-github-discussions-コミュニティでのディスカッションと引き継ぎ">4. GitHub Discussions: コミュニティでのディスカッションと引き継ぎ</a></h2>
 <h3 id="41-メンテナンス済みディスカッションレーン"><a class="header" href="#41-メンテナンス済みディスカッションレーン">4.1 メンテナンス済みディスカッションレーン</a></h3>
@@ -1053,7 +1053,7 @@ clippy                  ← cargo clippy --all-targets -- -D warnings
 <tr><td><code>status:blocked</code></td><td><code>#b60205</code> 赤</td><td>記録済みの未解決の外部依存関係、メンテナーの判断、またはリンクされた前提条件を待機中</td></tr>
 <tr><td><code>status:in-progress</code></td><td><code>#0075ca</code> 青</td><td>オープンPRがそのIssueに積極的に対応しています。staleパス中はライブPRの状態を確認してください</td></tr>
 <tr><td><code>status:stale</code></td><td><code>#e4e669</code> 黄色</td><td>staleしきい値ウィンドウ内に元の作成者のアクティビティがありません</td></tr>
-<tr><td><code>status:no-stale</code></td><td><code>#0e8a16</code> 緑</td><td>受け入れ済みまたはその他の長期稼働作業に対する明示的な stale 除外設定。対象ポリシーでは、運用ソースに記録された理由とアクティブなオーナーが必要です</td></tr>
+<tr><td><code>status:no-stale</code></td><td><code>#0e8a16</code> 緑</td><td>Explicit stale exemption for accepted or otherwise long-lived work; target policy requires a recorded reason and active owner or steward path in the operational source</td></tr>
 <tr><td><code>status:help-wanted</code></td><td><code>#059669</code> グリーン</td><td>コントリビューターを探しています</td></tr>
 <tr><td><code>status:good-first-issue</code></td><td><code>#059669</code> グリーン</td><td>新規コントリビューター向け</td></tr>
 <tr><td><code>status:discussion</code></td><td><code>#a78bfa</code> 紫</td><td>作業開始前にチームでの議論が必要です</td></tr>
@@ -1121,7 +1121,7 @@ clippy                  ← cargo clippy --all-targets -- -D warnings
 <p><strong>CODEOWNERS のレビューを自動でリクエスト（CODEOWNERS に組み込まれているため、アクションは不要）：</strong></p>
 <p>GitHub は、CODEOWNERS ファイルが存在し、ブランチ保護で必要とされている場合に自動的に CODEOWNERS を適用します。アクションは不要です。</p>
 <p><strong>古いIssueの管理 (<code>.github/workflows/stale.yml</code>):</strong></p>
-<p>45日間アクティビティがないイシューには <code>status:stale</code> ラベルが付けられ、そのイシューがまだ関連性があるかどうかを尋ねるコメントが投稿されます。stale ラベルが付けられてから15日間アクティビティがないイシューはクローズされます。これにより、数か月前のものでもはや関連性のない数百件のイシューがバックログに蓄積されるのを防ぎます。<code>priority:p0</code>、<code>type:rfc</code>、オープンなリンク済み PR を持つイシュー、および記録されたブロッカーが未解決のまま <code>status:blocked</code> が付いているイシューは除外します。意図された <code>status:no-stale</code> のフォローアップは、運用上の情報源が stale 除外の理由とアクティブなオーナーの両方を記録している場合に限り、それを除外することです。メンテナーのラベルガイドとイシュートリアージプロトコルに、現在の運用上の詳細が記載されています。</p>
+<p>Issues with no activity for 45 days are labeled <code>status:stale</code> and a comment is posted asking if the issue is still relevant. Issues with no activity for 15 days after the stale label is applied are closed. This prevents the backlog from accumulating hundreds of issues that are months old and no longer relevant. Exclude <code>priority:p0</code>, <code>type:rfc</code>, issues with open linked PRs, and issues with <code>status:blocked</code> while a recorded blocker remains unresolved. The intended <code>status:no-stale</code> follow-up is to exclude it only while the operational source records both the stale-exemption reason and a contributor-visible active owner or steward path. The maintainer label guide and issue-triage protocol carry the current operational details.</p>
 <p><strong>PRサイズラベル付け (<code>.github/workflows/pr-size.yml</code>):</strong></p>
 <p>変更された行数に基づいて、PR に <code>size:xs</code> から <code>size:xl</code> までのラベルを自動的に付与します。これにより、差分を開かずにレビュアーやメンテナーが範囲をすぐに把握できます。これらの閾値を初期値として使用してください：XS &lt; 10行、S &lt; 50行、M &lt; 250行、L &lt; 1000行、XL ≥ 1000行。</p>
 <p><strong>PRマージ時のマイルストーンチェック (<code>.github/workflows/milestone-check.yml</code>):</strong></p>

@@ -37,7 +37,7 @@
             const path_to_root = "../";
             const default_light_theme = "default-dark";
             const default_dark_theme = "default-dark";
-            window.path_to_searchindex_js = "../searchindex-2814a997.js";
+            window.path_to_searchindex_js = "../searchindex-03e0092e.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-560e5bce.js"></script>
@@ -217,10 +217,12 @@
 <p>更新頻度に基づいて分割を維持します:</p>
 <ul>
 <li>ラベルは独自の永続的な分類を保持します：作業の種類、スコープ/コンポーネント、レビューのリスク、測定された PR サイズ、および stale 除外。</li>
-<li>プロジェクトボードのフィールドは、それらのフィールドが積極的に保守されている場合、issue の計画段階、現在の担当者、依存関係の状態、ロードマップのグループ分けに適しています。</li>
+<li>Project board fields are appropriate for issue planning stage, active owner or steward path, dependency state, stale-exemption reason, and roadmap grouping when those fields are actively maintained.</li>
 <li>ネイティブの GitHub PR 状態は、変化の速いレビュー状態を管理します。レビュー判定、必須チェック、マージ可否、コンフリクト、古くなった承認などです。</li>
 </ul>
 <p>ボードはメンテナーの作業を軽減するべきです。あるフィールドが PR のプッシュやレビューのたびに手動でのメンテナンスを必要とする場合は、代わりにラベル、マイルストーン、またはネイティブの GitHub state を使用することを推奨します。</p>
+<p>Labels can suggest likely ownership, but they are not ownership. A <code>channel:*</code>, <code>provider:*</code>, <code>tool:*</code>, <code>security:*</code>, or <code>docs</code> label identifies the surface that probably needs attention. Contributor-visible owner-source rules live in the <a href="./pr-workflow.html#project-board-contract">Project board contract</a>.</p>
+<p>Use assignees for active work. Use area stewardship for routing responsibility when nobody is implementing yet. The <a href="./pr-workflow.html#issue-ownership-path">Project board contract</a> defines the accepted owner sources and routing outcomes.</p>
 <h2 id="正規の表記"><a class="header" href="#正規の表記">正規の表記</a></h2>
 <p>スコープ付きモジュールラベルには、スペースなしのモジュール表記をそのまま使用してください: <code>provider:openai</code>、<code>channel:telegram</code>、<code>tool:shell</code>、<code>security:policy</code>、および同様のラベル。size および risk ファミリーは意図的にコロンの後にスペースを保持します: <code>size: XS</code>、<code>risk: low</code>、<code>risk: medium</code>、<code>risk: high</code>。</p>
 <p><code>provider: openai</code>、<code>channel: telegram</code>、<code>tool: shell</code> などの古い重複ラベルはクリーンアップの候補です。削除する前に、オープンな issue/PR を正規のスペースなし表記に移行してください。オープンな参照のあるラベルを削除したり、ラベルファミリーを一括でリネームしたり、そのクリーンアップバッチに関するメンテナーの判断なしに stale-policy ラベルを削除したりしないでください。</p>
@@ -435,7 +437,7 @@
 <tr><td><code>status:blocked</code></td><td>作業は有効ですが、外部依存関係、メンテナーの判断、またはリンクされた前提条件を待機しています。ブロッカーが記録され未解決の間は stale から除外されます。同じブロッカーに対して <code>status:no-stale</code> と併用しないでください。</td></tr>
 <tr><td><code>status:in-progress</code></td><td>オープンな PR がこの issue に積極的に対応しています。stale パスの実行中はライブの PR の状態と照合してください。PR がクローズされた後は、このラベルは恒久的な除外対象とはなりません。</td></tr>
 <tr><td><code>status:stale</code></td><td>ステイル期間中に作成者のアクティビティがありません。更新されない場合はクローズされる可能性があります</td></tr>
-<tr><td><code>status:no-stale</code></td><td>別のstale除外設定でまだ保護されていない、承認済みまたはその他の長期間有効な作業に対する明示的なstale適用除外。メンテナーのコメント、issue本文、またはトラッカーのエントリにそのissueをオープンのままにすべき理由が記録されている場合にのみ使用してください。</td></tr>
+<tr><td><code>status:no-stale</code></td><td>Explicit stale exemption for accepted or otherwise long-lived work that is not already protected by another stale exclusion. Target policy: use only when the <a href="./pr-workflow.html#issue-ownership-path">Project board contract</a> has a contributor-visible stale-exemption reason and owner path. Existing exemptions missing those facts should be audited and repaired before stale sweeps stop honoring them.</td></tr>
 </tbody>
 </table>
 </div>

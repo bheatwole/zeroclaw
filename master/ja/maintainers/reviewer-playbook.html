@@ -37,7 +37,7 @@
             const path_to_root = "../";
             const default_light_theme = "default-dark";
             const default_dark_theme = "default-dark";
-            window.path_to_searchindex_js = "../searchindex-2814a997.js";
+            window.path_to_searchindex_js = "../searchindex-03e0092e.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-560e5bce.js"></script>
@@ -292,12 +292,13 @@
 <tr><td><code>status:accepted</code></td><td>チームが RFC または作業項目を承認しました。Issue にも stale 保護が必要な場合にのみ <code>status:no-stale</code> を追加してください。</td></tr>
 <tr><td><code>status:blocked</code></td><td>有効な作業が外部依存関係、メンテナーの決定、またはリンクされた前提条件を待機しています。ブロッカーを記録してください。これは、そのブロッカーが未解決のままである間のみ、stale 保護として機能します。</td></tr>
 <tr><td><code>status:in-progress</code></td><td>オープン中のPRがこのissueに積極的に対応しています。staleパス中にこの情報に依存する前に、ライブのPR状態を再確認してください。</td></tr>
-<tr><td><code>status:no-stale</code></td><td>受理された作業や、その他の長期的に存続する作業はオープンのままにしておくべきであり、他の stale 除外設定によってまだ保護されていないものが対象です。理由はメンテナーのコメント、issue 本文、またはトラッカーのエントリに記録してください。</td></tr>
+<tr><td><code>status:no-stale</code></td><td>Accepted or otherwise long-lived work should stay open and is not already protected by another stale exclusion. Record the reason and active owner or steward path using the contributor-visible owner sources in the <a href="./pr-workflow.html#issue-ownership-path">Project board contract</a>.</td></tr>
 <tr><td><code>good first issue</code></td><td>XS/S、自己完結型で、明確な受け入れ基準、関連するコードまたはドキュメントへのリンク、指名されたメンターまたは連絡先があり、オンボーディングのリスクが低い、ドキュメント化された作業。</td></tr>
 <tr><td><code>help wanted</code></td><td>メンテナーが外部からの支援を望み、レビュー可能な、実行可能でブロックされていない作業。一般的な有効/未割り当てのマーカーとして使用しないでください。</td></tr>
 </tbody>
 </table>
 </div>
+<p>Assignee means active work. Area steward means responsibility for the next issue-routing decision when no implementer is active. The <a href="./pr-workflow.html#issue-ownership-path">Project board contract</a> defines the accepted owner sources and routing outcomes. Labels can identify the likely area, but labels alone are not an owner source.</p>
 <h3 id="解像度ラベル"><a class="header" href="#解像度ラベル">解像度ラベル</a></h3>
 <p>解決ラベルは、アイテムをクローズするかアクティブキューから削除する場合にのみ使用してください。これらは最終的な結果を説明するものであり、オープンのままにすべき作業の <code>status:*</code> ライフサイクルラベルを置き換えるものではありません。<a href="./labels.html#resolution-labels">ラベルガイド</a>が、現在の解決ラベルの定義および移行の保留に関する信頼できる情報源です。</p>
 <p>重複の場合は、議論を終了またはリダイレクトする前に正規のターゲットへリンクしてください。無効なレポートの場合は、そのレポートが対応不可である理由、または代わりにどこへ送るべきかを説明してください。明示的に取り組まないと決めた作業については、ボードレベルの <code>Won't Do</code> / ライブの <code>wontfix</code> パスを使用し、簡潔な理由を残してください。</p>
@@ -331,7 +332,7 @@
 <p>これにより、コンテキストの損失を抑え、次のレビュアーがすでにあなたが行ったフェッチを再度行わないようにします。</p>
 <h2 id="週次キューの保守"><a class="header" href="#週次キューの保守">週次キューの保守</a></h2>
 <ul>
-<li>古くなったキューを確認します。受け入れ済みのもの、またはオープンのまま維持する理由が記録されている長期的な作業で、かつ別のstale除外によってまだ保護されていない場合にのみ、<code>status:no-stale</code> を適用してください。</li>
+<li>Walk the stale queue. Apply <code>status:no-stale</code> only when accepted or otherwise long-lived work has a recorded reason to stay open, a visible active owner or steward path, and no other stale exclusion already applies. Until the stale-exemption audit lands, treat existing <code>status:no-stale</code> issues missing those facts as audit findings rather than automatic stale candidates.</li>
 <li>まず、<code>size: XS/S</code> のバグおよびセキュリティ関連のPRを優先してください。</li>
 <li>頻繁に寄せられるサポートの質問を、ドキュメントの改善や自動応答のガイドラインへと変換する。</li>
 </ul>

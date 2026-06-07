@@ -37,7 +37,7 @@
             const path_to_root = "../";
             const default_light_theme = "default-dark";
             const default_dark_theme = "default-dark";
-            window.path_to_searchindex_js = "../searchindex-41030cb5.js";
+            window.path_to_searchindex_js = "../searchindex-70ed6cb6.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-eebe6d87.js"></script>
@@ -440,14 +440,14 @@
 </thead>
 <tbody>
 <tr><td>Étiquettes</td><td>classification durable : type, portée, risque, taille, niveau de contributeur, politique de mise au rebut/triage</td><td>état de revue par push, statut CI actif, listes de tâches personnelles</td></tr>
-<tr><td>Tableau de projet</td><td>état de planification : préparation, propriétaire actif, regroupement de la feuille de route, état de dépendance/blocage, motif d’exemption d’obsolescence lorsqu’un champ existe</td><td>file d’attente de revue de PR de référence, fusionnabilité, vérifications requises</td></tr>
+<tr><td>Tableau de projet</td><td>planning state: readiness, active owner or steward path, roadmap grouping, dependency/blocker state, stale-exemption reason when a field exists</td><td>file d’attente de revue de PR de référence, fusionnabilité, vérifications requises</td></tr>
 <tr><td>État de la PR native</td><td>décision de révision, vérifications requises, fraîcheur de la branche, conflits, fusionnabilité, état brouillon/prêt</td><td>responsabilité de la feuille de route à long terme</td></tr>
 <tr><td>Issues/RFC</td><td>enregistrement durable des discussions, état d’acceptation, besoin utilisateur, traçabilité de l’implémentation liée</td><td>remplacement en direct de la documentation du mainteneur après promotion de la politique</td></tr>
 </tbody>
 </table>
 </div>
 <p>Les couloirs de PR, les libellés contributor-pickup, les libellés stale-exemption et la migration des libellés sont des concepts de gouvernance durables, mais leurs critères opérationnels précis figurent dans la documentation des mainteneurs. FND-003 régit la répartition : les libellés classifient le travail durable, les tableaux de projet planifient le travail, l’état natif des PR gère l’état actif de revue et de fusion, et les issues/RFC conservent les décisions. Le <a href="../maintainers/pr-workflow.html#pr-lanes">workflow de PR des mainteneurs</a> régit les définitions des couloirs de PR, le <a href="../maintainers/labels.html">guide des libellés</a> régit la signification exacte des libellés et les règles de nettoyage, et le <a href="../maintainers/reviewer-playbook.html#issue-triage">manuel du relecteur</a> régit la façon dont les relecteurs appliquent ces signaux lors du tri et de la revue. Traitez la migration active des libellés comme un nettoyage distinct approuvé par les mainteneurs, et non comme une revue de PR ordinaire.</p>
-<p>Les exemptions d’obsolescence sont des exceptions de gouvernance, et non des boucliers de label permanents. La politique cible veut que <code>status:no-stale</code> ne soit valide que lorsque la source opérationnelle de la voie enregistre à la fois pourquoi le ticket est exempté et qui en est responsable. La documentation des mainteneurs définit où ces informations résident et comment l’automatisation d’obsolescence ou les balayages d’obsolescence appliquent cette règle.</p>
+<p>Stale exemptions are governance exceptions, not permanent label shields. The target policy is that <code>status:no-stale</code> is valid only when the lane’s operational source records both why the issue is exempt and who owns the next movement. The maintainer docs define where those facts live and how stale automation or stale sweeps enforce the rule.</p>
 <hr>
 <h2 id="4-github-discussions--discussion-communautaire-et-transfert"><a class="header" href="#4-github-discussions--discussion-communautaire-et-transfert">4. GitHub Discussions : Discussion communautaire et transfert</a></h2>
 <h3 id="41-voie-des-discussions-maintenues"><a class="header" href="#41-voie-des-discussions-maintenues">4.1 Voie des discussions maintenues</a></h3>
@@ -1053,7 +1053,7 @@ corps:
 <tr><td><code>status:bloqué</code></td><td><code>#b60205</code> Rouge</td><td>En attente d’une dépendance externe non résolue enregistrée, d’une décision du mainteneur ou d’un prérequis lié</td></tr>
 <tr><td><code>status:en-cours</code></td><td><code>#0075ca</code> Bleu</td><td>L’PR ouverte cible activement le problème ; vérifier l’état actuel de la PR pendant les passes d’obsolescence</td></tr>
 <tr><td><code>status:stale</code></td><td><code>#e4e669</code> Jaune</td><td>Aucune activité de l’auteur d’origine pendant la période du seuil d’inactivité</td></tr>
-<tr><td><code>status:no-stale</code></td><td><code>#0e8a16</code> Vert</td><td>Exemption explicite d’obsolescence pour les travaux acceptés ou de longue durée ; la politique cible exige une raison enregistrée et un propriétaire actif dans la source opérationnelle</td></tr>
+<tr><td><code>status:no-stale</code></td><td><code>#0e8a16</code> Vert</td><td>Explicit stale exemption for accepted or otherwise long-lived work; target policy requires a recorded reason and active owner or steward path in the operational source</td></tr>
 <tr><td><code>status:besoin-d-aide</code></td><td><code>#059669</code> Vert</td><td>À la recherche d’un contributeur</td></tr>
 <tr><td><code>status:bonne-première-problématique</code></td><td><code>#059669</code> Vert</td><td>Convient aux nouveaux contributeurs</td></tr>
 <tr><td><code>status:discussion</code></td><td><code>#a78bfa</code> Violet</td><td>Nécessite une discussion d’équipe avant le début du travail</td></tr>
@@ -1121,7 +1121,7 @@ corps:
 <p><strong>Demande automatique de revue CODEOWNERS (intégrée à CODEOWNERS — aucune Action requise) :</strong></p>
 <p>GitHub applique automatiquement CODEOWNERS lorsque le fichier existe et que la protection de branche l’exige. Aucune action requise.</p>
 <p><strong>Gestion des issues périmées (<code>.github/workflows/stale.yml</code>) :</strong></p>
-<p>Les tickets sans activité pendant 45 jours reçoivent le label <code>status:stale</code> et un commentaire est publié pour demander si le ticket est toujours pertinent. Les tickets sans activité pendant 15 jours après l’application du label « stale » sont fermés. Cela évite que le backlog n’accumule des centaines de tickets vieux de plusieurs mois et qui ne sont plus pertinents. Exclure <code>priority:p0</code>, <code>type:rfc</code>, les tickets ayant des PR liées ouvertes, et les tickets avec <code>status:blocked</code> tant qu’un bloqueur enregistré reste non résolu. Le suivi prévu pour <code>status:no-stale</code> consiste à l’exclure uniquement tant que la source opérationnelle enregistre à la fois le motif d’exemption « stale » et le responsable actif. Le guide des labels des mainteneurs et le protocole de triage des tickets contiennent les détails opérationnels actuels.</p>
+<p>Issues with no activity for 45 days are labeled <code>status:stale</code> and a comment is posted asking if the issue is still relevant. Issues with no activity for 15 days after the stale label is applied are closed. This prevents the backlog from accumulating hundreds of issues that are months old and no longer relevant. Exclude <code>priority:p0</code>, <code>type:rfc</code>, issues with open linked PRs, and issues with <code>status:blocked</code> while a recorded blocker remains unresolved. The intended <code>status:no-stale</code> follow-up is to exclude it only while the operational source records both the stale-exemption reason and a contributor-visible active owner or steward path. The maintainer label guide and issue-triage protocol carry the current operational details.</p>
 <p><strong>Étiquetage de la taille des PR (<code>.github/workflows/pr-size.yml</code>) :</strong></p>
 <p>Étiquetez automatiquement les PR avec <code>size:xs</code> à <code>size:xl</code> en fonction du nombre de lignes modifiées. Cela donne aux réviseurs et aux mainteneurs une idée immédiate de l’étendue sans avoir à ouvrir le diff. Utilisez ces seuils comme point de départ : XS &lt; 10 lignes, S &lt; 50, M &lt; 250, L &lt; 1000, XL ≥ 1000.</p>
 <p><strong>Vérification de l’étape clé lors de la fusion de la PR (<code>.github/workflows/milestone-check.yml</code>) :</strong></p>

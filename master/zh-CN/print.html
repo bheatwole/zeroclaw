@@ -38,7 +38,7 @@
             const path_to_root = "";
             const default_light_theme = "default-dark";
             const default_dark_theme = "default-dark";
-            window.path_to_searchindex_js = "searchindex-d3382b77.js";
+            window.path_to_searchindex_js = "searchindex-c320341a.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-812bb341.js"></script>
@@ -14572,14 +14572,14 @@ relates-to:
 </thead>
 <tbody>
 <tr><td>标签</td><td>持久分类：类型、范围、风险、规模、贡献者等级、过期/分诊策略</td><td>每次推送的审查状态、当前 CI 状态、个人任务列表</td></tr>
-<tr><td>项目看板</td><td>规划状态：就绪程度、当前负责人、路线图分组、依赖/阻塞状态，以及当字段存在时的过期豁免原因</td><td>权威 PR 审查队列、可合并性、必需的检查</td></tr>
+<tr><td>项目看板</td><td>planning state: readiness, active owner or steward path, roadmap grouping, dependency/blocker state, stale-exemption reason when a field exists</td><td>权威 PR 审查队列、可合并性、必需的检查</td></tr>
 <tr><td>原生 PR 状态</td><td>审查决定、必需检查、分支新鲜度、冲突、可合并性、草稿/就绪状态</td><td>长期路线图负责制</td></tr>
 <tr><td>问题/RFC</td><td>持久化讨论记录、验收状态、用户需求、关联实现追踪</td><td>策略推广后维护者文档的实时替换</td></tr>
 </tbody>
 </table>
 </div>
 <p>PR 通道、贡献者认领标签、过期豁免标签以及标签迁移都是稳定的治理概念，但它们的具体操作标准存放在维护者文档中。FND-003 负责划分职责：标签用于分类稳定工作，项目看板用于规划工作，原生 PR 状态负责实时审查与合并状态，issue/RFC 则用于保存决策。<a href="#pr-lanes">维护者 PR 工作流</a>定义 PR 通道，<a href="#标签">标签指南</a>定义具体的标签含义和清理规则，<a href="#issue-triage">审查者操作手册</a>说明审查者在分类和审查过程中如何应用这些信号。请将实时标签迁移视为单独的、需维护者批准的清理工作，而非普通的 PR 审查。</p>
-<p>过期豁免属于治理例外，而非永久性的标签护盾。目标策略规定，只有当通道的运维数据源同时记录了该问题被豁免的原因及其负责人时，<code>status:no-stale</code> 才有效。维护者文档定义了这些信息的存放位置，以及过期自动化或过期清理机制如何执行此规则。</p>
+<p>Stale exemptions are governance exceptions, not permanent label shields. The target policy is that <code>status:no-stale</code> is valid only when the lane’s operational source records both why the issue is exempt and who owns the next movement. The maintainer docs define where those facts live and how stale automation or stale sweeps enforce the rule.</p>
 <hr>
 <h2 id="4-github-discussions社区讨论与交接"><a class="header" href="#4-github-discussions社区讨论与交接">4. GitHub Discussions：社区讨论与交接</a></h2>
 <h3 id="41-维护讨论通道"><a class="header" href="#41-维护讨论通道">4.1 维护讨论通道</a></h3>
@@ -15185,7 +15185,7 @@ clippy                  ← cargo clippy --all-targets -- -D warnings
 <tr><td><code>状态：已阻止</code></td><td><code>#b60205</code> 红色</td><td>等待已记录的未解决外部依赖、维护者决定或关联的前置条件</td></tr>
 <tr><td><code>status:in-progress</code></td><td><code>#0075ca</code> 蓝色</td><td>打开的 PR 正在积极处理该 issue；在 stale 检查期间验证 PR 的实时状态</td></tr>
 <tr><td><code>status:stale</code></td><td><code>#e4e669</code> 黄色</td><td>在过期阈值窗口期内没有原作者的活动</td></tr>
-<tr><td><code>status:no-stale</code></td><td><code>#0e8a16</code> 绿色</td><td>针对已接受或其他长期存在的工作的明确过时豁免；目标策略要求在操作源中记录原因和活跃负责人</td></tr>
+<tr><td><code>status:no-stale</code></td><td><code>#0e8a16</code> 绿色</td><td>Explicit stale exemption for accepted or otherwise long-lived work; target policy requires a recorded reason and active owner or steward path in the operational source</td></tr>
 <tr><td><code>status:help-wanted</code></td><td><code>#059669</code> 绿色</td><td>寻找贡献者</td></tr>
 <tr><td><code>status:good-first-issue</code></td><td><code>#059669</code> 绿色</td><td>适合新贡献者</td></tr>
 <tr><td><code>状态：讨论中</code></td><td><code>#a78bfa</code> 紫色</td><td>需要在开始工作之前进行团队讨论</td></tr>
@@ -15253,7 +15253,7 @@ clippy                  ← cargo clippy --all-targets -- -D warnings
 <p><strong>自动请求 CODEOWNERS 审查（内置于 CODEOWNERS 中，无需额外操作）：</strong></p>
 <p>当文件存在且分支保护要求启用时，GitHub 会自动强制执行 CODEOWNERS。无需采取任何操作。</p>
 <p><strong>过期问题管理 (<code>.github/workflows/stale.yml</code>):</strong></p>
-<p>45 天无活动的 issue 会被标记为 <code>status:stale</code>，并发布一条评论询问该 issue 是否仍然相关。在添加 stale 标签后 15 天内仍无活动的 issue 将被关闭。这可以防止待办列表中积压数百个已存在数月且不再相关的 issue。排除 <code>priority:p0</code>、<code>type:rfc</code>、有未关闭关联 PR 的 issue，以及在已记录的阻塞因素尚未解决期间标记为 <code>status:blocked</code> 的 issue。预期的 <code>status:no-stale</code> 后续处理是：仅当运维数据源同时记录了 stale 豁免原因和活跃负责人时才将其排除。维护者标签指南和 issue 分类规范中包含当前的运维细节。</p>
+<p>Issues with no activity for 45 days are labeled <code>status:stale</code> and a comment is posted asking if the issue is still relevant. Issues with no activity for 15 days after the stale label is applied are closed. This prevents the backlog from accumulating hundreds of issues that are months old and no longer relevant. Exclude <code>priority:p0</code>, <code>type:rfc</code>, issues with open linked PRs, and issues with <code>status:blocked</code> while a recorded blocker remains unresolved. The intended <code>status:no-stale</code> follow-up is to exclude it only while the operational source records both the stale-exemption reason and a contributor-visible active owner or steward path. The maintainer label guide and issue-triage protocol carry the current operational details.</p>
 <p><strong>PR 大小标签（<code>.github/workflows/pr-size.yml</code>）：</strong></p>
 <p>根据变更的行数自动为 PR 添加 <code>size:xs</code> 到 <code>size:xl</code> 的标签。这可以让审查者和维护者在无需打开差异对比的情况下，立即了解 PR 的范围。使用以下阈值作为起点：XS &lt; 10 行，S &lt; 50，M &lt; 250，L &lt; 1000，XL ≥ 1000。</p>
 <p><strong>合并 PR 时的里程碑检查 (<code>.github/workflows/milestone-check.yml</code>)：</strong></p>
@@ -17697,6 +17697,34 @@ gh api repos/zeroclaw-labs/zeroclaw/actions/permissions/selected-actions
 <p>本规划拆分的 JSON 摘要草稿位于 <a href="maintainers/project-board-contract.json"><code>project-board-contract.json</code></a>。请将其视为未来看板刷新自动化的设计输入，而非当前已激活的 GitHub Project 集成。</p>
 <p>请勿将原生 PR 审查状态镜像到手动看板泳道。GitHub PR 状态拥有审查决策、必需检查、可合并性、冲突、过期批准和合并就绪状态。如果看板后续显示派生的 PR 路由信息（如 <code>DIRTY</code>、<code>BEHIND</code> 或 <code>APPROVED</code>），应将其视为 GitHub 状态的仪表盘视图，而非独立的事实来源。</p>
 <p>这样可以保持看板的实用性，而无需在每次推送、审查或 CI 运行后都要求维护者更新它。</p>
+<h3 id="issue-ownership-path"><a class="header" href="#issue-ownership-path">Issue ownership path</a></h3>
+<p>Issues need an ownership path before they can safely stay accepted, in progress, or stale-exempt for long periods. PRs have CODEOWNERS and requested reviewers; issues need an equivalent routing contract for the next triage decision.</p>
+<p>Use these meanings consistently:</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>信号</th><th>Means</th><th>Does not mean</th></tr>
+</thead>
+<tbody>
+<tr><td>负责人</td><td>Someone is actively implementing, investigating, or shepherding the immediate work.</td><td>Permanent area ownership or passive responsibility for every related issue.</td></tr>
+<tr><td>Area steward</td><td>A maintainer or documented steward surface owns the next routing decision: clarify, accept, close, defer, or identify the next implementation path.</td><td>Automatic implementation ownership.</td></tr>
+<tr><td>Project active owner</td><td>The board-visible person or steward source currently responsible for the next movement.</td><td>A replacement for live PR review state.</td></tr>
+<tr><td>标签</td><td>Durable classification and likely area routing.</td><td>Ownership by themselves.</td></tr>
+</tbody>
+</table>
+</div>
+<p>Area stewardship is the issue-side analogue to CODEOWNERS, but it is not implemented through CODEOWNERS. If GitHub issue fields are enabled and visible to the public on the issue page, prefer a Public issue field for <code>Area steward</code> or <code>Owner path</code>. Organization-only or private issue and Project fields do not satisfy contributor-visible ownership. Otherwise, the contributor-visible source can be a maintained steward table, a public Project field, an issue-visible maintainer comment, or a public tracker entry linked from the issue.</p>
+<p>Identifying the next implementation path does not mean the steward must personally implement the issue or guarantee staffing. It means they make the next step explicit: assign an active owner, make the issue contributor-ready, route it to a tracker or milestone, schedule it for maintainer triage, or close/defer it with a recorded rationale.</p>
+<p>Stewardship is decision ownership, not indefinite delivery ownership. A stewarded issue should not sit in an “owned” limbo; the next visible update should record one of the outcomes above or name the decision needed.</p>
+<p>Scheduling an issue for maintainer triage is valid only when the issue records what decision is needed, where that decision will be tracked, and when it will be revisited. After that triage pass, replace the triage routing with an active owner, contributor-ready scope, tracker or milestone route, blocked/deferred state, or closure rationale.</p>
+<p>For accepted or protected issues, prefer one of these visible owner sources before adding or keeping <code>status:no-stale</code>:</p>
+<ul>
+<li>an assignee doing active work;</li>
+<li>a Public issue field, issue comment, or body section naming the steward path;</li>
+<li>a public Project active-owner or area-steward field;</li>
+<li>a linked public tracker entry that names the steward or owner source.</li>
+</ul>
+<p>If none of those exists, the issue can still stay open while triage continues, but it should not rely on <code>status:no-stale</code> as a permanent shield. Until the stale-exemption audit lands, missing reason or owner evidence is an audit finding and proposed correction, not an automatic stale-closure trigger.</p>
 <h2 id="pr-通道"><a class="header" href="#pr-通道">PR 通道</a></h2>
 <p>PR 通道是路由预期，而非另一套必需的标签体系。可借助它们来判断一个 PR 需要多少审查深度、排序优先级以及维护者关注度。CODEOWNERS、GitHub 原生审查状态、CI、标签、关联议题以及明确的关系关键字仍承载着实际的路由数据。</p>
 <div class="table-wrapper">
@@ -17784,7 +17812,7 @@ gh api repos/zeroclaw-labs/zeroclaw/actions/permissions/selected-actions
 <ul>
 <li>首要维护者审查目标：<strong>48 小时内</strong>。</li>
 <li>被阻止的 PR 会收到一个可操作的清单评论，而不是一系列部分审查。</li>
-<li><code>status:no-stale</code> 适用于已接受的或其他长期存续的工作，并需记录在该问题未被其他过期豁免规则保护时仍保持开启状态的原因。</li>
+<li><code>status:no-stale</code> is reserved for accepted or otherwise long-lived work with a recorded stale-exemption reason and contributor-visible active owner or steward path when the issue is not already protected by another stale exclusion. Existing exemptions missing those facts are audit findings until the stale-exemption repair packet lands.</li>
 </ul>
 <p>对于堆叠工作，要求显式使用 <code>Depends on #...</code>，以确保审查顺序是确定的。</p>
 <p>对于替换操作，必须显式使用 <code>Supersedes #...</code>。有关归属和模板规则，请参阅 <a href="#替代-pr">替换 PR</a>。</p>
@@ -17910,12 +17938,13 @@ gh api repos/zeroclaw-labs/zeroclaw/actions/permissions/selected-actions
 <tr><td><code>status:accepted</code></td><td>团队已接受该 RFC 或工作项。仅当该 issue 还需要防止过期保护时，才添加 <code>status:no-stale</code>。</td></tr>
 <tr><td><code>状态：已阻止</code></td><td>有效的工作正在等待外部依赖、维护者决策或关联的前置条件。请记录该阻塞项；只有在该阻塞项尚未解决期间，此操作才属于过期保护。</td></tr>
 <tr><td><code>status:in-progress</code></td><td>一个开放的 PR 正在积极处理该议题。在过期检查过程中依赖此状态前，请重新核查 PR 的实时状态。</td></tr>
-<tr><td><code>status:no-stale</code></td><td>已接受或其他长期存在的工作应保持开放状态，且尚未被其他过期排除规则保护。请在维护者评论、issue 正文或跟踪条目中记录原因。</td></tr>
+<tr><td><code>status:no-stale</code></td><td>Accepted or otherwise long-lived work should stay open and is not already protected by another stale exclusion. Record the reason and active owner or steward path using the contributor-visible owner sources in the <a href="#issue-ownership-path">Project board contract</a>.</td></tr>
 <tr><td><code>good first issue</code></td><td>XS/S 级别、自包含、有完整文档且验收标准清晰的工作，包含相关代码或文档链接、指定的导师或联系人，且上手风险低。</td></tr>
 <tr><td><code>help wanted</code></td><td>维护者希望外部协助处理且可供审查的、可执行且无阻塞的工作。请勿将其用作通用的有效/无归属标记。</td></tr>
 </tbody>
 </table>
 </div>
+<p>Assignee means active work. Area steward means responsibility for the next issue-routing decision when no implementer is active. The <a href="#issue-ownership-path">Project board contract</a> defines the accepted owner sources and routing outcomes. Labels can identify the likely area, but labels alone are not an owner source.</p>
 <h3 id="分辨率标签"><a class="header" href="#分辨率标签">分辨率标签</a></h3>
 <p>仅在关闭或从活动队列中移除条目时使用解决方案标签。它们用于说明最终结果；对于应保持开放的工作项，它们不会取代 <code>status:*</code> 生命周期标签。<a href="#resolution-labels">标签指南</a>是当前解决方案标签定义和迁移保留项的权威来源。</p>
 <p>对于重复项，在关闭或重定向讨论之前，请先链接到规范的目标。对于无效报告，请说明是什么导致该报告无法处理，或者它应该被提交到何处。对于我们明确选择不去处理的工作，请使用看板级别的 <code>Won't Do</code> / 实时 <code>wontfix</code> 路径，并留下简要的理由说明。</p>
@@ -17949,7 +17978,7 @@ gh api repos/zeroclaw-labs/zeroclaw/actions/permissions/selected-actions
 <p>这有助于降低上下文丢失的风险，并避免下一位审阅者重复执行你已经完成的拉取操作。</p>
 <h2 id="每周队列清理"><a class="header" href="#每周队列清理">每周队列清理</a></h2>
 <ul>
-<li>遍历过期队列。仅当已接受或其他长期存在的工作有记录在案的保持开放的理由，且尚未受到其他过期排除规则保护时，才应用 <code>status:no-stale</code>。</li>
+<li>Walk the stale queue. Apply <code>status:no-stale</code> only when accepted or otherwise long-lived work has a recorded reason to stay open, a visible active owner or steward path, and no other stale exclusion already applies. Until the stale-exemption audit lands, treat existing <code>status:no-stale</code> issues missing those facts as audit findings rather than automatic stale candidates.</li>
 <li>优先处理 <code>size: XS/S</code> 的 bug 和安全相关 PR。</li>
 <li>将重复出现的支持问题转化为文档改进和自动回复指导。</li>
 </ul>
@@ -17969,10 +17998,12 @@ gh api repos/zeroclaw-labs/zeroclaw/actions/permissions/selected-actions
 <p>根据更新频率保持拆分：</p>
 <ul>
 <li>标签拥有持久的分类信息：工作类型、范围/组件、审查风险、已度量的 PR 规模以及过期豁免。</li>
-<li>当项目看板字段得到积极维护时,这些字段适用于表示问题的规划阶段、当前负责人、依赖状态以及路线图分组。</li>
+<li>Project board fields are appropriate for issue planning stage, active owner or steward path, dependency state, stale-exemption reason, and roadmap grouping when those fields are actively maintained.</li>
 <li>GitHub PR 原生状态负责管理快速变化的审查状态：审查决定、必需的检查、可合并性、冲突以及过期的批准。</li>
 </ul>
 <p>看板应当减少维护者的工作量。如果某个字段在每次 PR 推送或审查后都需要手动维护，建议改用标签、里程碑或 GitHub 原生状态。</p>
+<p>Labels can suggest likely ownership, but they are not ownership. A <code>channel:*</code>, <code>provider:*</code>, <code>tool:*</code>, <code>security:*</code>, or <code>docs</code> label identifies the surface that probably needs attention. Contributor-visible owner-source rules live in the <a href="#project-board-contract">Project board contract</a>.</p>
+<p>Use assignees for active work. Use area stewardship for routing responsibility when nobody is implementing yet. The <a href="#issue-ownership-path">Project board contract</a> defines the accepted owner sources and routing outcomes.</p>
 <h2 id="规范拼写"><a class="header" href="#规范拼写">规范拼写</a></h2>
 <p>对于作用域模块标签，请使用无空格的模块拼写形式：<code>provider:openai</code>、<code>channel:telegram</code>、<code>tool:shell</code>、<code>security:policy</code> 以及类似标签。size 和 risk 系列标签有意在冒号后保留空格：<code>size: XS</code>、<code>risk: low</code>、<code>risk: medium</code>、<code>risk: high</code>。</p>
 <p>诸如 <code>provider: openai</code>、<code>channel: telegram</code> 或 <code>tool: shell</code> 等遗留的重复标签属于清理候选项。在删除之前，请将未关闭的 issue/PR 迁移到规范的无空格写法。请勿删除存在未关闭引用的标签、大范围重命名标签族，或在未经维护者针对该清理批次做出决定的情况下移除过期策略标签。</p>
@@ -18187,7 +18218,7 @@ gh api repos/zeroclaw-labs/zeroclaw/actions/permissions/selected-actions
 <tr><td><code>状态：已阻止</code></td><td>工作有效，但正在等待外部依赖、维护者决策或关联的前置条件。在阻塞因素被记录且未解决期间，可豁免标记为过时。请勿针对同一阻塞因素与 <code>status:no-stale</code> 搭配使用。</td></tr>
 <tr><td><code>status:in-progress</code></td><td>一个开放的 PR 正在积极处理此 issue。在过期检查时请与实时的 PR 状态进行核对；该标签在 PR 关闭后并非永久豁免。</td></tr>
 <tr><td><code>status:stale</code></td><td>作者在过期窗口内无活动；如不刷新可能会被关闭</td></tr>
-<tr><td><code>status:no-stale</code></td><td>对已接受或其他长期存在但尚未受其他过期豁免规则保护的工作，进行显式的过期豁免。仅当维护者评论、issue 正文或跟踪记录中说明了该 issue 应保持开启的原因时，才使用此项。</td></tr>
+<tr><td><code>status:no-stale</code></td><td>Explicit stale exemption for accepted or otherwise long-lived work that is not already protected by another stale exclusion. Target policy: use only when the <a href="#issue-ownership-path">Project board contract</a> has a contributor-visible stale-exemption reason and owner path. Existing exemptions missing those facts should be audited and repaired before stale sweeps stop honoring them.</td></tr>
 </tbody>
 </table>
 </div>
