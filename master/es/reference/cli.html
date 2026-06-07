@@ -37,7 +37,7 @@
             const path_to_root = "../";
             const default_light_theme = "default-dark";
             const default_dark_theme = "default-dark";
-            window.path_to_searchindex_js = "../searchindex-be54bafa.js";
+            window.path_to_searchindex_js = "../searchindex-c06c0993.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-377ab6ef.js"></script>
@@ -515,6 +515,7 @@
 <ul>
 <li><code>-p</code>, <code>--port &lt;PORT&gt;</code> — Puerto en el que escuchar (usar 0 para un puerto aleatorio disponible); por defecto usa la configuración <code>gateway.port</code></li>
 <li><code>--host &lt;HOST&gt;</code> — Host al que vincularse; por defecto usa <code>gateway.host</code> de la configuración. Nota: Vincularse a <code>0.0.0.0</code> requiere <code>gateway.allow_public_bind = true</code> en la configuración.</li>
+<li><code>--allow-degraded-security</code> — Boot even when security-critical config sections were dropped to their defaults during load (weakened posture). Off by default</li>
 </ul>
 <h2 id="zeroclaw-gateway-reiniciar"><a class="header" href="#zeroclaw-gateway-reiniciar"><code>zeroclaw gateway reiniciar</code></a></h2>
 <p>Reinicia el servidor de puerta de enlace.</p>
@@ -525,6 +526,7 @@
 <ul>
 <li><code>-p</code>, <code>--port &lt;PORT&gt;</code> — Puerto en el que escuchar (usar 0 para un puerto aleatorio disponible); por defecto usa la configuración <code>gateway.port</code></li>
 <li><code>--host &lt;HOST&gt;</code> — Host al que vincularse; por defecto usa <code>gateway.host</code> de la configuración. Nota: Vincularse a <code>0.0.0.0</code> requiere <code>gateway.allow_public_bind = true</code> en la configuración.</li>
+<li><code>--allow-degraded-security</code> — Boot even when security-critical config sections were dropped to their defaults during load (weakened posture). Off by default</li>
 </ul>
 <h2 id="zeroclaw-gateway-obtener-código-de-par"><a class="header" href="#zeroclaw-gateway-obtener-código-de-par"><code>zeroclaw gateway obtener-código-de-par</code></a></h2>
 <p>Mostrar o generar el código de emparejamiento del gateway.</p>
@@ -560,6 +562,7 @@
 <li><code>-p</code>, <code>--port &lt;PORT&gt;</code> — Puerto en el que escuchar (usar 0 para un puerto aleatorio disponible); por defecto usa la configuración <code>gateway.port</code></li>
 <li><code>--host &lt;HOST&gt;</code> — Host al que vincularse; por defecto usa la configuración <code>gateway.host</code></li>
 <li><code>--ephemeral</code> — Self-terminate after all socket clients disconnect (with grace period)</li>
+<li><code>--allow-degraded-security</code> — Boot even when security-critical config sections were dropped to their defaults during load. Without this, the daemon refuses to start with a weakened posture; with it, the daemon boots so the operator can reach repair surfaces, emitting a repeating warning</li>
 </ul>
 <h2 id="zeroclaw-service"><a class="header" href="#zeroclaw-service"><code>zeroclaw service</code></a></h2>
 <p>Gestiona el ciclo de vida del servicio del sistema operativo (servicio de usuario de launchd/systemd)</p>

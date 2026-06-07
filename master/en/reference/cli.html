@@ -37,7 +37,7 @@
             const path_to_root = "../";
             const default_light_theme = "default-dark";
             const default_dark_theme = "default-dark";
-            window.path_to_searchindex_js = "../searchindex-2cf96b1f.js";
+            window.path_to_searchindex_js = "../searchindex-91e6e96b.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-475fae1a.js"></script>
@@ -526,6 +526,7 @@ zeroclaw gateway start -p 0         # random available port</p>
 <ul>
 <li><code>-p</code>, <code>--port &lt;PORT&gt;</code> — Port to listen on (use 0 for random available port); defaults to config gateway.port</li>
 <li><code>--host &lt;HOST&gt;</code> — Host to bind to; defaults to config gateway.host Note: Binding to 0.0.0.0 requires <code>gateway.allow_public_bind = true</code> in config</li>
+<li><code>--allow-degraded-security</code> — Boot even when security-critical config sections were dropped to their defaults during load (weakened posture). Off by default</li>
 </ul>
 <h2 id="zeroclaw-gateway-restart"><a class="header" href="#zeroclaw-gateway-restart"><code>zeroclaw gateway restart</code></a></h2>
 <p>Restart the gateway server.</p>
@@ -538,6 +539,7 @@ zeroclaw gateway restart -p 8080    # restart on port 8080</p>
 <ul>
 <li><code>-p</code>, <code>--port &lt;PORT&gt;</code> — Port to listen on (use 0 for random available port); defaults to config gateway.port</li>
 <li><code>--host &lt;HOST&gt;</code> — Host to bind to; defaults to config gateway.host Note: Binding to 0.0.0.0 requires <code>gateway.allow_public_bind = true</code> in config</li>
+<li><code>--allow-degraded-security</code> — Boot even when security-critical config sections were dropped to their defaults during load (weakened posture). Off by default</li>
 </ul>
 <h2 id="zeroclaw-gateway-get-paircode"><a class="header" href="#zeroclaw-gateway-get-paircode"><code>zeroclaw gateway get-paircode</code></a></h2>
 <p>Show or generate the gateway pairing code.</p>
@@ -581,6 +583,7 @@ zeroclaw daemon –host 127.0.0.1  # localhost only</p>
 <li><code>-p</code>, <code>--port &lt;PORT&gt;</code> — Port to listen on (use 0 for random available port); defaults to config gateway.port</li>
 <li><code>--host &lt;HOST&gt;</code> — Host to bind to; defaults to config gateway.host</li>
 <li><code>--ephemeral</code> — Self-terminate after all socket clients disconnect (with grace period)</li>
+<li><code>--allow-degraded-security</code> — Boot even when security-critical config sections were dropped to their defaults during load. Without this, the daemon refuses to start with a weakened posture; with it, the daemon boots so the operator can reach repair surfaces, emitting a repeating warning</li>
 </ul>
 <h2 id="zeroclaw-service"><a class="header" href="#zeroclaw-service"><code>zeroclaw service</code></a></h2>
 <p>Manage OS service lifecycle (launchd/systemd user service)</p>
