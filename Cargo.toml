@@ -407,7 +407,7 @@ metrics = ["observability-prometheus"]
 # - `plugins-wasm-runtime-only`: Fastest startup for plugins and smallest binary size,
 #   but requires plugin authors to compile a specific version for each target
 #   architecture (`.cwasm` files instead of `.wasm`) unless one of the two JIT
-#   compilation feature flags is also used. 
+#   compilation feature flags is also used.
 # - `plugins-wasm-cranelift`: Add the Cranelift JIT compilation engine on top of
 #   the runtime which enables compiling WASM plugins on the host machine, but
 #   results in larger binary size due to the Cranelift dependency. NOTE: Not
