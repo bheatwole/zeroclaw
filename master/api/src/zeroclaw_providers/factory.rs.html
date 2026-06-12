@@ -284,7 +284,7 @@ data-theme="ayu"></script><meta name="rustdoc-vars" data-root-path="../../" data
 <a href=#282 id=282 data-nosnippet>282</a>                    <span class="prelude-val">Err</span>(anyhow::Error::msg(<span class="macro">format!</span>(
 <a href=#283 id=283 data-nosnippet>283</a>                        <span class="string">"Unknown model_provider family: {family}. After the V2 to typed-family migration, \
 <a href=#284 id=284 data-nosnippet>284</a>                         only canonical family names are valid. Run `zeroclaw quickstart` to reconfigure, \
-<a href=#285 id=285 data-nosnippet>285</a>                         or set `[model_providers.custom.&lt;alias&gt;] uri = \"https://your-api.com\"` for \
+<a href=#285 id=285 data-nosnippet>285</a>                         or set `[providers.models.custom.&lt;alias&gt;] uri = \"https://your-api.com\"` for \
 <a href=#286 id=286 data-nosnippet>286</a>                         OpenAI-compatible custom endpoints."
 <a href=#287 id=287 data-nosnippet>287</a>                    </span>)))
 <a href=#288 id=288 data-nosnippet>288</a>                },
@@ -940,7 +940,7 @@ data-theme="ayu"></script><meta name="rustdoc-vars" data-root-path="../../" data
 <a href=#938 id=938 data-nosnippet>938</a>        _opts: <span class="kw-2">&amp;</span>ModelProviderRuntimeOptions,
 <a href=#939 id=939 data-nosnippet>939</a>    ) -&gt; <span class="prelude-ty">Result</span>&lt;Box&lt;<span class="kw">dyn </span>ModelProvider&gt;&gt; {
 <a href=#940 id=940 data-nosnippet>940</a>        <span class="comment">// Reads typed Azure alias fields directly. Operator sets these
-<a href=#941 id=941 data-nosnippet>941</a>        // under `[model_providers.azure.&lt;alias&gt;]` or via the schema-mirror
+<a href=#941 id=941 data-nosnippet>941</a>        // under `[providers.models.azure.&lt;alias&gt;]` or via the schema-mirror
 <a href=#942 id=942 data-nosnippet>942</a>        // env grammar — env-var fallback eradicated.
 <a href=#943 id=943 data-nosnippet>943</a>        </span><span class="kw">let </span>resource = <span class="self">self</span>.resource.as_deref().ok_or_else(|| {
 <a href=#944 id=944 data-nosnippet>944</a>            <span class="macro">::zeroclaw_log::record!</span>(
@@ -956,7 +956,7 @@ data-theme="ayu"></script><meta name="rustdoc-vars" data-root-path="../../" data
 <a href=#954 id=954 data-nosnippet>954</a>            </span>);
 <a href=#955 id=955 data-nosnippet>955</a>            anyhow::Error::msg(
 <a href=#956 id=956 data-nosnippet>956</a>                <span class="string">"Azure model_provider requires `resource`: set \
-<a href=#957 id=957 data-nosnippet>957</a>                 `[model_providers.azure.&lt;alias&gt;] resource = \"...\"` in config.toml."</span>,
+<a href=#957 id=957 data-nosnippet>957</a>                 `[providers.models.azure.&lt;alias&gt;] resource = \"...\"` in config.toml."</span>,
 <a href=#958 id=958 data-nosnippet>958</a>            )
 <a href=#959 id=959 data-nosnippet>959</a>        })<span class="question-mark">?</span>;
 <a href=#960 id=960 data-nosnippet>960</a>        <span class="kw">let </span>deployment = <span class="self">self</span>.deployment.as_deref().ok_or_else(|| {
@@ -973,7 +973,7 @@ data-theme="ayu"></script><meta name="rustdoc-vars" data-root-path="../../" data
 <a href=#971 id=971 data-nosnippet>971</a>            </span>);
 <a href=#972 id=972 data-nosnippet>972</a>            anyhow::Error::msg(
 <a href=#973 id=973 data-nosnippet>973</a>                <span class="string">"Azure model_provider requires `deployment`: set \
-<a href=#974 id=974 data-nosnippet>974</a>                 `[model_providers.azure.&lt;alias&gt;] deployment = \"...\"` in config.toml."</span>,
+<a href=#974 id=974 data-nosnippet>974</a>                 `[providers.models.azure.&lt;alias&gt;] deployment = \"...\"` in config.toml."</span>,
 <a href=#975 id=975 data-nosnippet>975</a>            )
 <a href=#976 id=976 data-nosnippet>976</a>        })<span class="question-mark">?</span>;
 <a href=#977 id=977 data-nosnippet>977</a>        <span class="kw">let </span>api_version = <span class="self">self</span>.api_version.as_deref();
@@ -1105,7 +1105,7 @@ data-theme="ayu"></script><meta name="rustdoc-vars" data-root-path="../../" data
 <a href=#1103 id=1103 data-nosnippet>1103</a>        .with_models_dev_key(<span class="string">"groq"</span>);
 <a href=#1104 id=1104 data-nosnippet>1104</a>        <span class="comment">// Groq's llama-family models reject native tool calls with HTTP
 <a href=#1105 id=1105 data-nosnippet>1105</a>        // 400; default to text-fallback. Operators can override per-alias
-<a href=#1106 id=1106 data-nosnippet>1106</a>        // via `[model_providers.groq.&lt;alias&gt;] native_tools = true`.
+<a href=#1106 id=1106 data-nosnippet>1106</a>        // via `[providers.models.groq.&lt;alias&gt;] native_tools = true`.
 <a href=#1107 id=1107 data-nosnippet>1107</a>        </span><span class="kw">if </span>opts.native_tools != <span class="prelude-val">Some</span>(<span class="bool-val">true</span>) {
 <a href=#1108 id=1108 data-nosnippet>1108</a>            p = p.without_native_tools();
 <a href=#1109 id=1109 data-nosnippet>1109</a>        }
@@ -1292,7 +1292,7 @@ data-theme="ayu"></script><meta name="rustdoc-vars" data-root-path="../../" data
 <a href=#1290 id=1290 data-nosnippet>1290</a>            </span>);
 <a href=#1291 id=1291 data-nosnippet>1291</a>            anyhow::Error::msg(
 <a href=#1292 id=1292 data-nosnippet>1292</a>                <span class="string">"Custom model_provider requires `uri`: set \
-<a href=#1293 id=1293 data-nosnippet>1293</a>                 `[model_providers.custom.&lt;alias&gt;] uri = \"https://your-api.com\"` in config.toml."</span>,
+<a href=#1293 id=1293 data-nosnippet>1293</a>                 `[providers.models.custom.&lt;alias&gt;] uri = \"https://your-api.com\"` in config.toml."</span>,
 <a href=#1294 id=1294 data-nosnippet>1294</a>            )
 <a href=#1295 id=1295 data-nosnippet>1295</a>        })<span class="question-mark">?</span>;
 <a href=#1296 id=1296 data-nosnippet>1296</a>        <span class="kw">if let </span><span class="prelude-val">Some</span>(p) = build_responses_provider_if_requested(
@@ -1333,7 +1333,7 @@ data-theme="ayu"></script><meta name="rustdoc-vars" data-root-path="../../" data
 <a href=#1331 id=1331 data-nosnippet>1331</a>        <span class="kw">let </span>base_url = api_url.ok_or_else(|| {
 <a href=#1332 id=1332 data-nosnippet>1332</a>            anyhow::Error::msg(
 <a href=#1333 id=1333 data-nosnippet>1333</a>                <span class="string">"OpenAI-compatible model_provider requires `uri`: set \
-<a href=#1334 id=1334 data-nosnippet>1334</a>                 `[model_providers.&lt;family&gt;.&lt;alias&gt;] uri = \"https://your-api.com\"` in config.toml."</span>,
+<a href=#1334 id=1334 data-nosnippet>1334</a>                 `[providers.models.&lt;family&gt;.&lt;alias&gt;] uri = \"https://your-api.com\"` in config.toml."</span>,
 <a href=#1335 id=1335 data-nosnippet>1335</a>            )
 <a href=#1336 id=1336 data-nosnippet>1336</a>        })<span class="question-mark">?</span>;
 <a href=#1337 id=1337 data-nosnippet>1337</a>        <span class="kw">if let </span><span class="prelude-val">Some</span>(p) =
