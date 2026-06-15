@@ -14513,6 +14513,7 @@ dependencies = [
  "anyhow",
  "async-trait",
  "base64 0.22.1",
+ "cap-std",
  "extism",
  "reqwest 0.12.28",
  "ring",
