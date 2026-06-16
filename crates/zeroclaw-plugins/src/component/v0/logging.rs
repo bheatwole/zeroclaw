@@ -54,7 +54,7 @@ impl PluginLoggingHost {
     /// - Wildcard domain names (e.g. `*.example.com`) are resolved at connect
     ///   time using a reverse-DNS lookup; the resulting hostname is matched
     ///   against the pattern. If reverse DNS fails, the connection is denied.
-    pub fn with_permissions(perms: &[crate::FineGrainedPermission]) -> anyhow::Result<Self> {
+    pub async fn with_permissions(perms: &[crate::FineGrainedPermission]) -> anyhow::Result<Self> {
         let mut builder = WasiCtxBuilder::new();
 
         let mut tcp_rules: Vec<AddrRule> = Vec::new();
@@ -89,7 +89,7 @@ impl PluginLoggingHost {
                         has_domain_lookup =
                             has_domain_lookup || addr.as_str().parse::<IpAddr>().is_err();
                     }
-                    tcp_rules.push(AddrRule::parse(addr)?);
+                    tcp_rules.push(AddrRule::parse(addr).await?);
                 }
                 crate::FineGrainedPermission::Udp(addr) => {
                     has_udp = true;
@@ -97,7 +97,7 @@ impl PluginLoggingHost {
                         has_domain_lookup =
                             has_domain_lookup || addr.as_str().parse::<IpAddr>().is_err();
                     }
-                    udp_rules.push(AddrRule::parse(addr)?);
+                    udp_rules.push(AddrRule::parse(addr).await?);
                 }
             }
         }
@@ -151,7 +151,7 @@ enum AddrRule {
 }
 
 impl AddrRule {
-    fn parse(addr: &crate::AddressString) -> anyhow::Result<Self> {
+    async fn parse(addr: &crate::AddressString) -> anyhow::Result<Self> {
         let s = addr.as_str();
         // IP literal
         if let Ok(ip) = s.parse::<IpAddr>() {
@@ -166,10 +166,10 @@ impl AddrRule {
             );
             return Ok(Self::WildcardPattern(s.to_string()));
         }
-        // Exact domain — resolve now (blocking; plugin load happens rarely)
-        use std::net::ToSocketAddrs;
-        let ips: Arc<[IpAddr]> = format!("{s}:0")
-            .to_socket_addrs()
+        // Exact domain — resolve async
+        use tokio::net::lookup_host;
+        let ips: Arc<[IpAddr]> = lookup_host(format!("{s}:0"))
+            .await
             .map_err(|e| anyhow::Error::msg(format!("failed to resolve '{s}': {e}")))?
             .map(|sa| sa.ip())
             .collect();

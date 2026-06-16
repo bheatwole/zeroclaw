@@ -135,7 +135,7 @@ impl Tool for ComponentTool {
 
         let permissions = Arc::clone(&self.permissions);
         logging::wrap_plugin_call(&plugin_name, &plugin_version, "execute", async move {
-            let host = PluginLoggingHost::with_permissions(&permissions)?;
+            let host = PluginLoggingHost::with_permissions(&permissions).await?;
             let mut store = wasmtime::Store::new(engine.engine(), host);
             let bindings = pre.instantiate(&mut store).map_err(PluginError::from)?;
             let exports = bindings.zeroclaw_plugin_tool();

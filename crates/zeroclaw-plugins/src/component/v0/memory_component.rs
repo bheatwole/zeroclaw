@@ -64,7 +64,7 @@ impl ComponentMemory {
     /// `permissions` is applied to the long-lived store so that filesystem,
     /// TCP, UDP, and HTTP access are restricted to the declared
     /// `fine_grained_permissions` list.
-    pub fn from_bytes(
+    pub async fn from_bytes(
         alias: impl Into<String>,
         engine: Arc<ComponentEngine>,
         bytes: &[u8],
@@ -74,7 +74,7 @@ impl ComponentMemory {
         let mut linker = wasmtime::component::Linker::<PluginLoggingHost>::new(engine.engine());
         wasmtime_wasi::p2::add_to_linker_async(&mut linker).map_err(PluginError::from)?;
         logging::add_to_linker_memory(&mut linker)?;
-        let host = PluginLoggingHost::with_permissions(&permissions)?;
+        let host = PluginLoggingHost::with_permissions(&permissions).await?;
         let mut store = wasmtime::Store::new(engine.engine(), host);
 
         let instance = linker
