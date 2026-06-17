@@ -14551,6 +14551,7 @@ dependencies = [
  "cap-std",
  "dns-lookup",
  "extism",
+ "hyper",
  "reqwest 0.12.28",
  "ring",
  "serde",

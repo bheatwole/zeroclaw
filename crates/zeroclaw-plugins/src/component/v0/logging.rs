@@ -14,7 +14,11 @@ use wasmtime::component::{HasSelf, ResourceTable};
 use wasmtime_wasi::sockets::SocketAddrUse;
 use wasmtime_wasi::{DirPerms, FilePerms, WasiCtx, WasiCtxBuilder, WasiCtxView, WasiView};
 use wasmtime_wasi_http::WasiHttpCtx;
-use wasmtime_wasi_http::p2::{WasiHttpCtxView, WasiHttpView};
+use wasmtime_wasi_http::p2::bindings::http::types::ErrorCode;
+use wasmtime_wasi_http::p2::{
+    self, HttpResult, WasiHttpCtxView, WasiHttpHooks, WasiHttpView, body::HyperOutgoingBody,
+    types::HostFutureIncomingResponse, types::OutgoingRequestConfig,
+};
 use zeroclaw_log::{Action, Event, EventOutcome, info_span, record};
 
 use super::bindings;
@@ -25,6 +29,7 @@ use super::bindings;
 pub struct PluginLoggingHost {
     wasi: WasiCtx,
     http: WasiHttpCtx,
+    http_hooks: PluginHttpHooks,
     table: ResourceTable,
 }
 
@@ -35,8 +40,52 @@ impl Default for PluginLoggingHost {
         Self {
             wasi: WasiCtxBuilder::new().build(),
             http: WasiHttpCtx::new(),
+            http_hooks: PluginHttpHooks::default(),
             table: ResourceTable::new(),
         }
+    }
+}
+
+#[derive(Default)]
+struct PluginHttpHooks {
+    allowed_http_rules: Vec<HttpHostRule>,
+}
+
+impl PluginHttpHooks {
+    fn new(allowed_http_rules: Vec<HttpHostRule>) -> Self {
+        Self { allowed_http_rules }
+    }
+}
+
+impl WasiHttpHooks for PluginHttpHooks {
+    fn send_request(
+        &mut self,
+        request: hyper::Request<HyperOutgoingBody>,
+        config: OutgoingRequestConfig,
+    ) -> HttpResult<HostFutureIncomingResponse> {
+        let Some(authority) = request.uri().authority() else {
+            return Err(ErrorCode::HttpRequestUriInvalid.into());
+        };
+        let Some(host) = normalize_authority_host(authority.as_str()) else {
+            return Err(ErrorCode::HttpRequestUriInvalid.into());
+        };
+
+        if !self
+            .allowed_http_rules
+            .iter()
+            .any(|rule| rule.matches_host(&host))
+        {
+            record!(
+                WARN,
+                Event::new(module_path!(), Action::Reject)
+                    .with_outcome(EventOutcome::Failure)
+                    .with_attrs(json!({ "host": host, "authority": authority.as_str() })),
+                "outbound HTTP request denied by fine-grained permission allow-list"
+            );
+            return Err(ErrorCode::HttpRequestDenied.into());
+        }
+
+        Ok(p2::default_send_request(request, config))
     }
 }
 
@@ -61,6 +110,7 @@ impl PluginLoggingHost {
     pub async fn with_permissions(perms: &[crate::FineGrainedPermission]) -> anyhow::Result<Self> {
         let mut builder = WasiCtxBuilder::new();
 
+        let mut http_rules: Vec<HttpHostRule> = Vec::new();
         let mut tcp_rules: Vec<AddrRule> = Vec::new();
         let mut udp_rules: Vec<AddrRule> = Vec::new();
         let mut has_tcp = false;
@@ -86,8 +136,16 @@ impl PluginLoggingHost {
                         .preopened_dir(&dir.host_path, &dir.guest_path, dir_perms, file_perms)
                         .map_err(|e| anyhow::Error::msg(format!("{e}")))?;
                 }
-                crate::FineGrainedPermission::Http(addr)
-                | crate::FineGrainedPermission::Tcp(addr) => {
+                crate::FineGrainedPermission::Http(addr) => {
+                    http_rules.push(HttpHostRule::parse(addr)?);
+                    has_tcp = true;
+                    if !addr.is_wildcard() {
+                        has_domain_lookup =
+                            has_domain_lookup || addr.as_str().parse::<IpAddr>().is_err();
+                    }
+                    tcp_rules.push(AddrRule::parse(addr).await?);
+                }
+                crate::FineGrainedPermission::Tcp(addr) => {
                     has_tcp = true;
                     if !addr.is_wildcard() {
                         has_domain_lookup =
@@ -137,8 +195,37 @@ impl PluginLoggingHost {
         Ok(Self {
             wasi: builder.build(),
             http: WasiHttpCtx::new(),
+            http_hooks: PluginHttpHooks::new(http_rules),
             table: ResourceTable::new(),
         })
+    }
+}
+
+/// A pre-parsed allow-list entry for outbound HTTP request hosts.
+enum HttpHostRule {
+    Ip(IpAddr),
+    ExactDomain(String),
+    WildcardPattern(String),
+}
+
+impl HttpHostRule {
+    fn parse(addr: &crate::AddressString) -> anyhow::Result<Self> {
+        let s = addr.as_str();
+        if let Ok(ip) = s.parse::<IpAddr>() {
+            return Ok(Self::Ip(ip));
+        }
+        if addr.is_wildcard() {
+            return Ok(Self::WildcardPattern(s.to_lowercase()));
+        }
+        Ok(Self::ExactDomain(s.to_lowercase()))
+    }
+
+    fn matches_host(&self, host: &str) -> bool {
+        match self {
+            Self::Ip(allowed) => host.parse::<IpAddr>().is_ok_and(|ip| ip == *allowed),
+            Self::ExactDomain(allowed) => host.eq_ignore_ascii_case(allowed),
+            Self::WildcardPattern(pattern) => wildcard_matches(host, pattern),
+        }
     }
 }
 
@@ -285,8 +372,66 @@ impl WasiHttpView for PluginLoggingHost {
         WasiHttpCtxView {
             ctx: &mut self.http,
             table: &mut self.table,
-            hooks: wasmtime_wasi_http::p2::default_hooks(),
+            hooks: &mut self.http_hooks,
         }
+    }
+}
+
+fn normalize_authority_host(authority: &str) -> Option<String> {
+    let trimmed = authority.trim();
+    if trimmed.is_empty() || trimmed.contains('@') {
+        return None;
+    }
+
+    let host = if trimmed.starts_with('[') {
+        let end = trimmed.find(']')?;
+        if end + 1 < trimmed.len() && !trimmed[end + 1..].starts_with(':') {
+            return None;
+        }
+        &trimmed[1..end]
+    } else {
+        trimmed.split(':').next().unwrap_or(trimmed)
+    };
+
+    let normalized = host.trim_end_matches('.');
+    if normalized.is_empty() {
+        return None;
+    }
+
+    Some(normalized.to_lowercase())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn normalize_authority_host_handles_common_shapes() {
+        assert_eq!(
+            normalize_authority_host("example.com:443").as_deref(),
+            Some("example.com")
+        );
+        assert_eq!(
+            normalize_authority_host("[::1]:8080").as_deref(),
+            Some("::1")
+        );
+        assert_eq!(
+            normalize_authority_host("example.com.").as_deref(),
+            Some("example.com")
+        );
+        assert!(normalize_authority_host("bad@host").is_none());
+    }
+
+    #[test]
+    fn http_host_rules_match_exact_and_wildcard_hosts() {
+        let exact =
+            HttpHostRule::parse(&crate::AddressString::new("Example.COM").unwrap()).unwrap();
+        let wildcard =
+            HttpHostRule::parse(&crate::AddressString::new("*.example.com").unwrap()).unwrap();
+
+        assert!(exact.matches_host("example.com"));
+        assert!(wildcard.matches_host("api.example.com"));
+        assert!(!wildcard.matches_host("example.com"));
     }
 }
 

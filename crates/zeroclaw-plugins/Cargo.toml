@@ -11,6 +11,7 @@ default = ["plugins-wit-v0"]
 plugins-wit-v0 = []
 plugins-wasmtime = [
   "dep:dns-lookup",
+  "dep:hyper",
   "dep:wasmtime",
   "dep:wasmtime-wasi",
   "dep:wasmtime-wasi-http",
@@ -32,6 +33,7 @@ ring = "0.17"
 serde = { version = "1.0", default-features = false, features = ["derive"] }
 serde_json = { version = "1.0", default-features = false, features = ["std"] }
 extism = "1.21"
+hyper = { version = "1", default-features = false, optional = true }
 reqwest = { version = "0.12", default-features = false, features = [
   "blocking",
   "rustls-tls",
