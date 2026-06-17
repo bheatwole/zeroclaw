@@ -73,6 +73,8 @@ impl ComponentMemory {
         let component = engine.compile(bytes)?;
         let mut linker = wasmtime::component::Linker::<PluginLoggingHost>::new(engine.engine());
         wasmtime_wasi::p2::add_to_linker_async(&mut linker).map_err(PluginError::from)?;
+        wasmtime_wasi_http::p2::add_only_http_to_linker_async(&mut linker)
+            .map_err(PluginError::from)?;
         logging::add_to_linker_memory(&mut linker)?;
         let host = PluginLoggingHost::with_permissions(&permissions).await?;
         let mut store = wasmtime::Store::new(engine.engine(), host);

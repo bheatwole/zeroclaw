@@ -12695,6 +12695,29 @@ dependencies = [
 ]
 
 [[package]]
+name = "wasmtime-wasi-http"
+version = "45.0.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "10e03132bf0eb02270f1a1efb8ad0144c3924e0eb8258543803866e47ab808ce"
+dependencies = [
+ "async-trait",
+ "bytes",
+ "futures",
+ "http 1.4.1",
+ "http-body",
+ "http-body-util",
+ "hyper",
+ "rustls",
+ "tokio",
+ "tokio-rustls",
+ "tracing",
+ "wasmtime 45.0.1",
+ "wasmtime-wasi",
+ "wasmtime-wasi-io",
+ "webpki-roots 0.26.11",
+]
+
+[[package]]
 name = "wasmtime-wasi-io"
 version = "45.0.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -14538,6 +14561,7 @@ dependencies = [
  "toml 1.1.2+spec-1.1.0",
  "wasmtime 45.0.2",
  "wasmtime-wasi",
+ "wasmtime-wasi-http",
  "zeroclaw-api",
  "zeroclaw-infra",
  "zeroclaw-log",

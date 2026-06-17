@@ -13,6 +13,8 @@ use serde_json::json;
 use wasmtime::component::{HasSelf, ResourceTable};
 use wasmtime_wasi::sockets::SocketAddrUse;
 use wasmtime_wasi::{DirPerms, FilePerms, WasiCtx, WasiCtxBuilder, WasiCtxView, WasiView};
+use wasmtime_wasi_http::WasiHttpCtx;
+use wasmtime_wasi_http::p2::{WasiHttpCtxView, WasiHttpView};
 use zeroclaw_log::{Action, Event, EventOutcome, info_span, record};
 
 use super::bindings;
@@ -22,6 +24,7 @@ use super::bindings;
 /// Store-data type for all three component plugin worlds.
 pub struct PluginLoggingHost {
     wasi: WasiCtx,
+    http: WasiHttpCtx,
     table: ResourceTable,
 }
 
@@ -31,6 +34,7 @@ impl Default for PluginLoggingHost {
     fn default() -> Self {
         Self {
             wasi: WasiCtxBuilder::new().build(),
+            http: WasiHttpCtx::new(),
             table: ResourceTable::new(),
         }
     }
@@ -49,7 +53,7 @@ impl PluginLoggingHost {
     ///
     /// Address rules:
     /// - IPv4/IPv6 literals are matched exactly at connect time.
-    /// - Exact domain names are resolved via blocking DNS at construction and
+    /// - Exact domain names are resolved via async DNS at construction and
     ///   their IPs are matched at connect time.
     /// - Wildcard domain names (e.g. `*.example.com`) are resolved at connect
     ///   time using a reverse-DNS lookup; the resulting hostname is matched
@@ -132,6 +136,7 @@ impl PluginLoggingHost {
 
         Ok(Self {
             wasi: builder.build(),
+            http: WasiHttpCtx::new(),
             table: ResourceTable::new(),
         })
     }
@@ -271,6 +276,16 @@ impl WasiView for PluginLoggingHost {
         WasiCtxView {
             ctx: &mut self.wasi,
             table: &mut self.table,
+        }
+    }
+}
+
+impl WasiHttpView for PluginLoggingHost {
+    fn http(&mut self) -> WasiHttpCtxView<'_> {
+        WasiHttpCtxView {
+            ctx: &mut self.http,
+            table: &mut self.table,
+            hooks: wasmtime_wasi_http::p2::default_hooks(),
         }
     }
 }
