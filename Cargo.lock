@@ -14543,6 +14543,10 @@ dependencies = [
 ]
 
 [[package]]
+name = "zeroclaw-plugin-sdk"
+version = "0.8.1"
+
+[[package]]
 name = "zeroclaw-plugins"
 version = "0.8.1"
 dependencies = [
