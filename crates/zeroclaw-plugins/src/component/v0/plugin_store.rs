@@ -140,6 +140,16 @@ impl WasiHttpHooks for PluginHttpHooks {
 /// rather than streaming — simpler to get correct, and adequate for the
 /// JSON/small-attachment payloads plugin tool/channel calls are expected to
 /// carry. Streaming can be added later if a plugin needs large transfers.
+///
+/// Retries on 429/5xx, same magnitudes (`MAX_RETRIES`/base/max delay) and
+/// shared `zeroclaw_infra::retry` primitives native channels already use
+/// (see `zeroclaw-channels/src/webhook.rs`) — this hook was the one
+/// outbound caller that hadn't been wired up to the centralized retry
+/// logic since it was promoted out of per-channel duplication.
+const MAX_RETRIES: u32 = 3;
+const RETRY_BASE_DELAY_MS: u64 = 500;
+const RETRY_MAX_DELAY_MS: u64 = 30_000;
+
 async fn send_via_proxy_client(
     client: reqwest::Client,
     request: hyper::Request<HyperOutgoingBody>,
@@ -157,20 +167,56 @@ async fn send_via_proxy_client(
         .map_err(|e| ErrorCode::InternalError(Some(format!("failed reading request body: {e}"))))?
         .to_bytes();
 
-    let mut req_builder = client.request(parts.method, url).headers(parts.headers);
-    if !body_bytes.is_empty() {
-        req_builder = req_builder.body(body_bytes.to_vec());
-    }
+    let (status, headers, body_bytes) = 'attempts: {
+        let mut last_err = None;
+        for attempt in 0..=MAX_RETRIES {
+            let mut req_builder = client
+                .request(parts.method.clone(), url.clone())
+                .headers(parts.headers.clone());
+            if !body_bytes.is_empty() {
+                req_builder = req_builder.body(body_bytes.to_vec());
+            }
 
-    let resp = req_builder.send().await.map_err(|e| {
-        ErrorCode::InternalError(Some(format!("proxy-aware outbound request failed: {e}")))
-    })?;
+            let resp = match req_builder.send().await {
+                Ok(resp) => resp,
+                Err(e) => {
+                    last_err = Some(e.to_string());
+                    continue;
+                }
+            };
 
-    let status = resp.status();
-    let headers = resp.headers().clone();
-    let body_bytes = resp.bytes().await.map_err(|e| {
-        ErrorCode::InternalError(Some(format!("failed reading response body: {e}")))
-    })?;
+            let status = resp.status();
+            if attempt < MAX_RETRIES && zeroclaw_infra::retry::is_retryable_status(status.as_u16())
+            {
+                let delay = resp
+                    .headers()
+                    .get("retry-after")
+                    .and_then(|v| v.to_str().ok())
+                    .and_then(zeroclaw_infra::retry::parse_retry_after_ms)
+                    .map(std::time::Duration::from_millis)
+                    .unwrap_or_else(|| {
+                        zeroclaw_infra::retry::compute_backoff(
+                            attempt,
+                            RETRY_BASE_DELAY_MS,
+                            RETRY_MAX_DELAY_MS,
+                        )
+                    });
+                tokio::time::sleep(delay).await;
+                continue;
+            }
+
+            let headers = resp.headers().clone();
+            let body_bytes = resp.bytes().await.map_err(|e| {
+                ErrorCode::InternalError(Some(format!("failed reading response body: {e}")))
+            })?;
+            break 'attempts (status, headers, body_bytes);
+        }
+        return Err(ErrorCode::InternalError(Some(format!(
+            "proxy-aware outbound request failed after {} attempts: {}",
+            MAX_RETRIES + 1,
+            last_err.unwrap_or_else(|| "exhausted retries on retryable status".to_string())
+        ))));
+    };
 
     let response_body = Full::new(body_bytes)
         .map_err(|never: std::convert::Infallible| match never {})
@@ -774,5 +820,103 @@ mod tests {
         );
 
         drop(server);
+    }
+
+    /// Spin up a one-shot HTTP/1.1 server that replies to a sequence of
+    /// connections in order, one `(status, body)` pair per connection, then
+    /// shuts down. Every response carries `Retry-After: 0` so retry tests
+    /// don't pay real backoff delay.
+    async fn spawn_sequenced_response_server(
+        responses: Vec<(u16, &'static str)>,
+    ) -> (u16, tokio::task::JoinHandle<()>) {
+        use tokio::io::{AsyncReadExt, AsyncWriteExt};
+        let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await.unwrap();
+        let port = listener.local_addr().unwrap().port();
+        let handle = zeroclaw_spawn::spawn!(async move {
+            for (status, body) in responses {
+                let (mut stream, _) = listener.accept().await.unwrap();
+                let mut buf = [0u8; 4096];
+                let _ = stream.read(&mut buf).await;
+                let response = format!(
+                    "HTTP/1.1 {status} {status}\r\nRetry-After: 0\r\nContent-Length: {}\r\nConnection: close\r\n\r\n{}",
+                    body.len(),
+                    body
+                );
+                let _ = stream.write_all(response.as_bytes()).await;
+                let _ = stream.shutdown().await;
+            }
+        });
+        (port, handle)
+    }
+
+    #[tokio::test]
+    async fn send_request_retries_on_429_then_succeeds() {
+        let (port, server) =
+            spawn_sequenced_response_server(vec![(429, "rate-limited"), (200, "ok-now")]).await;
+        let allowed =
+            vec![HttpHostRule::parse(&crate::AddressString::new("127.0.0.1").unwrap()).unwrap()];
+        let mut hooks = PluginHttpHooks::new(allowed, reqwest::Client::new());
+
+        let request = hyper::Request::builder()
+            .method("GET")
+            .uri(format!("http://127.0.0.1:{port}/"))
+            .body(empty_outgoing_body())
+            .unwrap();
+
+        let future = hooks
+            .send_request(request, test_outgoing_request_config())
+            .expect("allow-listed host must be permitted");
+        let incoming = resolve_future_response(future)
+            .await
+            .expect("request must succeed after retrying past the 429");
+        assert_eq!(incoming.resp.status(), 200);
+
+        let body = incoming
+            .resp
+            .into_body()
+            .collect()
+            .await
+            .expect("reading response body must succeed")
+            .to_bytes();
+        assert_eq!(&body[..], b"ok-now");
+        server.await.unwrap();
+    }
+
+    #[tokio::test]
+    async fn send_request_surfaces_final_status_after_exhausting_retries() {
+        let (port, server) =
+            spawn_sequenced_response_server(vec![(503, "1"), (503, "2"), (503, "3"), (503, "4")])
+                .await;
+        let allowed =
+            vec![HttpHostRule::parse(&crate::AddressString::new("127.0.0.1").unwrap()).unwrap()];
+        let mut hooks = PluginHttpHooks::new(allowed, reqwest::Client::new());
+
+        let request = hyper::Request::builder()
+            .method("GET")
+            .uri(format!("http://127.0.0.1:{port}/"))
+            .body(empty_outgoing_body())
+            .unwrap();
+
+        let future = hooks
+            .send_request(request, test_outgoing_request_config())
+            .expect("allow-listed host must be permitted");
+        let incoming = resolve_future_response(future)
+            .await
+            .expect("the final attempt's response must still be surfaced, not an error");
+        assert_eq!(incoming.resp.status(), 503);
+
+        let body = incoming
+            .resp
+            .into_body()
+            .collect()
+            .await
+            .expect("reading response body must succeed")
+            .to_bytes();
+        assert_eq!(
+            &body[..],
+            b"4",
+            "must surface the 4th (last) attempt's response"
+        );
+        server.await.unwrap();
     }
 }
