@@ -1,6 +1,5 @@
 use anyhow::{Result, bail};
 use async_trait::async_trait;
-use chrono::{DateTime, NaiveDateTime, Utc};
 use serde::{Deserialize, Serialize};
 use std::time::Duration;
 use zeroclaw_api::channel::{Channel, ChannelMessage, SendMessage};
@@ -95,11 +94,11 @@ impl WebhookChannel {
     /// and with ±25% jitter applied. Jitter is applied before the final cap, so the
     /// returned delay is strictly `<= retry_max_delay_ms`.
     fn compute_backoff(&self, attempt: u32) -> Duration {
-        let multiplier = 1_u64.checked_shl(attempt).unwrap_or(u64::MAX);
-        let base = self.retry_base_delay_ms.saturating_mul(multiplier);
-        let jittered = apply_jitter(base);
-        let capped = jittered.min(self.retry_max_delay_ms);
-        Duration::from_millis(capped)
+        zeroclaw_infra::retry::compute_backoff(
+            attempt,
+            self.retry_base_delay_ms,
+            self.retry_max_delay_ms,
+        )
     }
 
     /// Verify an incoming request's signature if a secret is configured.
@@ -162,7 +161,7 @@ impl WebhookChannel {
             .headers()
             .get(reqwest::header::RETRY_AFTER)
             .and_then(|v| v.to_str().ok())
-            .and_then(parse_retry_after_ms);
+            .and_then(zeroclaw_infra::retry::parse_retry_after_ms);
 
         // 429 and 503 may include Retry-After; honor it if present. 429 appears here
         // *and* in the branch below: here we take the server-supplied delay, below we
@@ -201,62 +200,6 @@ impl ::zeroclaw_api::attribution::Attributable for WebhookChannel {
     fn alias(&self) -> &str {
         &self.alias
     }
-}
-
-/// Apply ±25% jitter to a delay so parallel senders do not thunder-herd.
-fn apply_jitter(delay_ms: u64) -> u64 {
-    if delay_ms == 0 {
-        return 0;
-    }
-    let jitter_factor = 0.75 + (rand::random::<f64>() * 0.5);
-    // Safe: jitter_factor > 0 keeps the product non-negative; f64→u64 cast saturates on overflow.
-    #[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss)]
-    let jittered = ((delay_ms as f64) * jitter_factor) as u64;
-    jittered
-}
-
-/// Parse a `Retry-After` header value. Supports integer seconds, decimal
-/// seconds (truncated to whole seconds), and HTTP-date values.
-fn parse_retry_after_ms(value: &str) -> Option<u64> {
-    parse_retry_after_ms_at(value, Utc::now())
-}
-
-fn parse_retry_after_ms_at(value: &str, now: DateTime<Utc>) -> Option<u64> {
-    let trimmed = value.trim();
-    if trimmed.is_empty() {
-        return None;
-    }
-    if let Ok(seconds) = trimmed.parse::<u64>() {
-        return Some(seconds.saturating_mul(1000));
-    }
-    let whole = trimmed
-        .split_once('.')
-        .map(|(whole, _)| whole)
-        .unwrap_or(trimmed);
-    if let Ok(seconds) = whole.parse::<u64>() {
-        return Some(seconds.saturating_mul(1000));
-    }
-
-    parse_retry_after_http_date(trimmed).map(|date| {
-        let delay_ms = date.signed_duration_since(now).num_milliseconds();
-        if delay_ms <= 0 {
-            0
-        } else {
-            u64::try_from(delay_ms).unwrap_or(u64::MAX)
-        }
-    })
-}
-
-fn parse_retry_after_http_date(value: &str) -> Option<DateTime<Utc>> {
-    if let Ok(date) = NaiveDateTime::parse_from_str(value, "%a, %d %b %Y %H:%M:%S GMT") {
-        return Some(DateTime::from_naive_utc_and_offset(date, Utc));
-    }
-    if let Ok(date) = NaiveDateTime::parse_from_str(value, "%A, %d-%b-%y %H:%M:%S GMT") {
-        return Some(DateTime::from_naive_utc_and_offset(date, Utc));
-    }
-    NaiveDateTime::parse_from_str(value, "%a %b %e %H:%M:%S %Y")
-        .ok()
-        .map(|date| DateTime::from_naive_utc_and_offset(date, Utc))
 }
 
 /// Outcome of a single send attempt.
@@ -504,6 +447,7 @@ impl Channel for WebhookChannel {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use chrono::{DateTime, Utc};
 
     fn make_channel() -> WebhookChannel {
         WebhookChannel::new(
@@ -685,12 +629,18 @@ mod tests {
 
     #[test]
     fn parse_retry_after_integer_seconds() {
-        assert_eq!(parse_retry_after_ms("5"), Some(5_000));
+        assert_eq!(
+            zeroclaw_infra::retry::parse_retry_after_ms("5"),
+            Some(5_000)
+        );
     }
 
     #[test]
     fn parse_retry_after_decimal_seconds() {
-        assert_eq!(parse_retry_after_ms("2.9"), Some(2_000));
+        assert_eq!(
+            zeroclaw_infra::retry::parse_retry_after_ms("2.9"),
+            Some(2_000)
+        );
     }
 
     #[test]
@@ -699,7 +649,10 @@ mod tests {
             .unwrap()
             .with_timezone(&Utc);
         assert_eq!(
-            parse_retry_after_ms_at("Sun, 06 Nov 1994 08:49:39 GMT", now),
+            zeroclaw_infra::retry::parse_retry_after_ms_at(
+                "Sun, 06 Nov 1994 08:49:39 GMT",
+                now
+            ),
             Some(2_000)
         );
     }
@@ -710,11 +663,14 @@ mod tests {
             .unwrap()
             .with_timezone(&Utc);
         assert_eq!(
-            parse_retry_after_ms_at("Sunday, 06-Nov-94 08:49:39 GMT", now),
+            zeroclaw_infra::retry::parse_retry_after_ms_at(
+                "Sunday, 06-Nov-94 08:49:39 GMT",
+                now
+            ),
             Some(2_000)
         );
         assert_eq!(
-            parse_retry_after_ms_at("Sun Nov  6 08:49:39 1994", now),
+            zeroclaw_infra::retry::parse_retry_after_ms_at("Sun Nov  6 08:49:39 1994", now),
             Some(2_000)
         );
     }
@@ -725,24 +681,30 @@ mod tests {
             .unwrap()
             .with_timezone(&Utc);
         assert_eq!(
-            parse_retry_after_ms_at("Sun, 06 Nov 1994 08:49:37 GMT", now),
+            zeroclaw_infra::retry::parse_retry_after_ms_at(
+                "Sun, 06 Nov 1994 08:49:37 GMT",
+                now
+            ),
             Some(0)
         );
     }
 
     #[test]
     fn parse_retry_after_rejects_non_numeric() {
-        assert_eq!(parse_retry_after_ms("later"), None);
+        assert_eq!(zeroclaw_infra::retry::parse_retry_after_ms("later"), None);
     }
 
     #[test]
     fn parse_retry_after_empty() {
-        assert_eq!(parse_retry_after_ms("  "), None);
+        assert_eq!(zeroclaw_infra::retry::parse_retry_after_ms("  "), None);
     }
 
     #[test]
     fn parse_retry_after_zero() {
-        assert_eq!(parse_retry_after_ms("0"), Some(0));
+        assert_eq!(
+            zeroclaw_infra::retry::parse_retry_after_ms("0"),
+            Some(0)
+        );
     }
 
     #[test]
