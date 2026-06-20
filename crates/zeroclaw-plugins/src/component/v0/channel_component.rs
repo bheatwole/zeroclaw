@@ -81,7 +81,8 @@ impl ComponentChannel {
         let mut store = wasmtime::Store::new(engine.engine(), host);
 
         let instance = linker
-            .instantiate(&mut store, &component)
+            .instantiate_async(&mut store, &component)
+            .await
             .map_err(PluginError::from)?;
         let bindings = ChannelPlugin::new(&mut store, &instance).map_err(PluginError::from)?;
 

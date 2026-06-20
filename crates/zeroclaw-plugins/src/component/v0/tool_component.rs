@@ -6,7 +6,7 @@
 //
 // At construction the component bytes are compiled once and a `ToolPluginPre`
 // is built via `Linker::instantiate_pre`.  Per `execute` call a fresh
-// `Store<PluginStore>` is created and `pre.instantiate` does only the
+// `Store<PluginStore>` is created and `pre.instantiate_async` does only the
 // cheap per-instance wiring step.
 
 use std::sync::Arc;
@@ -76,7 +76,10 @@ impl ComponentTool {
 
         // Probe metadata with a throw-away store.
         let mut store = wasmtime::Store::new(engine.engine(), PluginStore::default());
-        let bindings = pre.instantiate(&mut store).map_err(PluginError::from)?;
+        let bindings = pre
+            .instantiate_async(&mut store)
+            .await
+            .map_err(PluginError::from)?;
 
         // Phase 2: read plugin-info exports — canonical source of truth.
         let plugin_info = bindings.zeroclaw_plugin_plugin_info();
@@ -145,7 +148,10 @@ impl Tool for ComponentTool {
         wrap_plugin::wrap_plugin_call(&plugin_name, &plugin_version, "execute", async move {
             let host = PluginStore::with_permissions(&permissions, &network_config).await?;
             let mut store = wasmtime::Store::new(engine.engine(), host);
-            let bindings = pre.instantiate(&mut store).map_err(PluginError::from)?;
+            let bindings = pre
+                .instantiate_async(&mut store)
+                .await
+                .map_err(PluginError::from)?;
             let exports = bindings.zeroclaw_plugin_tool();
 
             let wit_result = exports
