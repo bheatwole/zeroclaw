@@ -125,28 +125,26 @@ impl ComponentChannel {
         } else {
             None
         };
-        let cached_self_addressed_mention = if capabilities
-            .contains(ChannelCapabilities::SELF_ADDRESSED_MENTION)
-        {
-            bindings
-                .zeroclaw_plugin_channel()
-                .call_self_addressed_mention(&mut store)
-                .await
-                .map_err(PluginError::from)?
-        } else {
-            None
-        };
-        let cached_multi_message_delay_ms = if capabilities
-            .contains(ChannelCapabilities::MULTI_MESSAGE_DELAY_MS)
-        {
-            bindings
-                .zeroclaw_plugin_channel()
-                .call_multi_message_delay_ms(&mut store)
-                .await
-                .map_err(PluginError::from)?
-        } else {
-            800
-        };
+        let cached_self_addressed_mention =
+            if capabilities.contains(ChannelCapabilities::SELF_ADDRESSED_MENTION) {
+                bindings
+                    .zeroclaw_plugin_channel()
+                    .call_self_addressed_mention(&mut store)
+                    .await
+                    .map_err(PluginError::from)?
+            } else {
+                None
+            };
+        let cached_multi_message_delay_ms =
+            if capabilities.contains(ChannelCapabilities::MULTI_MESSAGE_DELAY_MS) {
+                bindings
+                    .zeroclaw_plugin_channel()
+                    .call_multi_message_delay_ms(&mut store)
+                    .await
+                    .map_err(PluginError::from)?
+            } else {
+                800
+            };
 
         Ok(Self {
             alias: alias.into(),

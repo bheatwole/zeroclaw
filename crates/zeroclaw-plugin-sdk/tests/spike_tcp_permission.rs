@@ -77,8 +77,7 @@ async fn run_tcp_probe(
     fine_grained_permission_type: &str,
     addr: std::net::SocketAddr,
 ) -> zeroclaw_api::tool::ToolResult {
-    let example_dir =
-        Path::new(env!("CARGO_MANIFEST_DIR")).join("examples/tool-tcp-probe");
+    let example_dir = Path::new(env!("CARGO_MANIFEST_DIR")).join("examples/tool-tcp-probe");
     let wasm_path = common::build_example(&example_dir, "tool_tcp_probe");
 
     let workdir = tempfile::tempdir().expect("tempdir");

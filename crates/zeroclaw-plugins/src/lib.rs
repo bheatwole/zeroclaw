@@ -482,8 +482,7 @@ value = { host_path = "/data", guest_path = "/data" }
             FineGrainedPermission::Udp(AddressString::new("*.example.com").unwrap()),
         ] {
             let json = serde_json::to_string(&perm).expect("must serialize");
-            let back: FineGrainedPermission =
-                serde_json::from_str(&json).expect("must round-trip");
+            let back: FineGrainedPermission = serde_json::from_str(&json).expect("must round-trip");
             assert_eq!(format!("{perm:?}"), format!("{back:?}"));
         }
     }
