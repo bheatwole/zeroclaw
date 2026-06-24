@@ -21,7 +21,6 @@ plugins-wasmtime = [
   "dep:wasmtime-wasi",
   "dep:wasmtime-wasi-http",
   "dep:zeroclaw-config",
-  "dep:zeroclaw-infra",
   "tokio/fs",
   "tokio/net",
   "tokio/io-util",
@@ -32,7 +31,7 @@ plugins-wasm-pulley = ["plugins-wasmtime", "wasmtime/pulley"]
 [dependencies]
 zeroclaw-api.workspace = true
 zeroclaw-config = { workspace = true, optional = true }
-zeroclaw-infra = { workspace = true, optional = true }
+zeroclaw-infra.workspace = true
 zeroclaw-log.workspace = true
 zeroclaw-spawn.workspace = true
 anyhow = "1.0"
