@@ -9,6 +9,7 @@ use super::bindings::channel::zeroclaw::plugin::http_helpers::{
 };
 use super::bindings::channel::zeroclaw::plugin::types::MediaAttachment;
 use crate::component::plugin_store::PluginStore;
+use futures_util::StreamExt;
 
 fn apply_headers(
     mut builder: reqwest::RequestBuilder,
@@ -115,20 +116,27 @@ impl Host for PluginStore {
             .unwrap_or("attachment")
             .to_string();
 
-        let data = resp
-            .bytes()
-            .await
-            .map_err(|e| format!("failed reading download-to-attachment body: {e}"))?;
-        if data.len() > max_bytes as usize {
-            return Err(format!(
-                "download-to-attachment exceeded max-bytes ({} > {max_bytes})",
-                data.len()
-            ));
+        let max_bytes = u64::from(max_bytes);
+        let mut data = Vec::new();
+
+        // Chunk sizes in this stream are determined by reqwest and the underlying hyper
+        // client, which limits the size of each chunk to a few KB.
+        let mut stream = resp.bytes_stream();
+        while let Some(chunk) = stream.next().await {
+            let chunk =
+                chunk.map_err(|e| format!("failed reading download-to-attachment body: {e}"))?;
+            if data.len() as u64 + chunk.len() as u64 > max_bytes {
+                return Err(format!(
+                    "download-to-attachment exceeded max-bytes ({} > {max_bytes})",
+                    data.len() as u64 + chunk.len() as u64
+                ));
+            }
+            data.extend_from_slice(&chunk);
         }
 
         Ok(MediaAttachment {
             file_name,
-            data: data.to_vec(),
+            data,
             mime_type,
         })
     }
@@ -174,6 +182,31 @@ mod tests {
             received
         });
         (port, handle)
+    }
+
+    /// One-shot server that replies with `Transfer-Encoding: chunked` and no
+    /// `Content-Length`, so a size cap can only be enforced by inspecting
+    /// bytes as they stream in rather than by a header-based fast reject.
+    async fn spawn_chunked_server(chunks: &'static [&'static [u8]]) -> u16 {
+        let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await.unwrap();
+        let port = listener.local_addr().unwrap().port();
+        zeroclaw_spawn::spawn!(async move {
+            let (mut stream, _) = listener.accept().await.unwrap();
+            let mut buf = vec![0u8; 65536];
+            let _ = stream.read(&mut buf).await.unwrap_or(0);
+            let header = "HTTP/1.1 200 OK\r\nContent-Type: application/octet-stream\r\nTransfer-Encoding: chunked\r\nConnection: close\r\n\r\n";
+            let _ = stream.write_all(header.as_bytes()).await;
+            for chunk in chunks {
+                let _ = stream
+                    .write_all(format!("{:x}\r\n", chunk.len()).as_bytes())
+                    .await;
+                let _ = stream.write_all(chunk).await;
+                let _ = stream.write_all(b"\r\n").await;
+            }
+            let _ = stream.write_all(b"0\r\n\r\n").await;
+            let _ = stream.shutdown().await;
+        });
+        port
     }
 
     #[tokio::test]
@@ -278,6 +311,25 @@ mod tests {
         )
         .await
         .expect_err("a body larger than max-bytes must be rejected");
+        assert!(err.contains("exceeded max-bytes"));
+    }
+
+    #[tokio::test]
+    async fn download_to_attachment_rejects_chunked_body_over_max_bytes_without_content_length() {
+        // No Content-Length is sent, so a fast header-based reject is
+        // impossible; the cap can only be hit by inspecting bytes as they
+        // arrive, proving the body isn't fully buffered before the check.
+        let port = spawn_chunked_server(&[b"abc", b"def", b"ghi"]).await;
+        let mut store = allowed_store().await;
+
+        let err = Host::download_to_attachment(
+            &mut store,
+            format!("http://127.0.0.1:{port}/big.bin"),
+            vec![],
+            4,
+        )
+        .await
+        .expect_err("a chunked body larger than max-bytes must be rejected while streaming");
         assert!(err.contains("exceeded max-bytes"));
     }
 }
