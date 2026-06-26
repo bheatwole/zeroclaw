@@ -1,0 +1,35 @@
+{
+  "$schema": "https://developer.microsoft.com/en-us/json-schemas/teams/v1.17/MicrosoftTeams.schema.json",
+  "manifestVersion": "1.17",
+  "version": "1.0.0",
+  "id": "REPLACE-WITH-bot_app_id-FROM-credentials.toml",
+  "packageName": "com.zeroclaw.teamschannel",
+  "developer": {
+    "name": "ZeroClaw",
+    "websiteUrl": "https://example.com",
+    "privacyUrl": "https://example.com/privacy",
+    "termsOfUseUrl": "https://example.com/terms"
+  },
+  "name": {
+    "short": "ZeroClaw",
+    "full": "ZeroClaw Agent"
+  },
+  "description": {
+    "short": "ZeroClaw agent channel for Microsoft Teams.",
+    "full": "Lets a ZeroClaw agent be @-mentioned in Teams channels. Messages are delivered to the agent via Microsoft Graph polling, not via this app's bot messaging endpoint -- see SETUP.md."
+  },
+  "icons": {
+    "color": "color.png",
+    "outline": "outline.png"
+  },
+  "accentColor": "#2D2D2D",
+  "bots": [
+    {
+      "botId": "REPLACE-WITH-bot_app_id-FROM-credentials.toml",
+      "scopes": ["team"],
+      "supportsFiles": false,
+      "isNotificationOnly": false
+    }
+  ],
+  "validDomains": []
+}

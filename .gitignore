@@ -23,6 +23,9 @@
 .secrets
 firmware/*/target
 crates/zeroclaw-plugin-sdk/examples/*/target
+plugins/channels/*/target
+plugins/memory/*/target
+plugins/tools/*/target
 web/dist/*
 !web/dist/.gitkeep
 

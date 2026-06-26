@@ -1,0 +1,28 @@
+[workspace]
+
+[package]
+name = "microsoft-teams-channel"
+version = "0.1.0"
+edition = "2024"
+publish = false
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+zeroclaw-plugin-sdk = { path = "../../../crates/zeroclaw-plugin-sdk", features = [
+    "channel",
+] }
+waki = { version = "0.5", features = ["json"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+toml = "0.8"
+
+[dev-dependencies]
+zeroclaw-plugins = { path = "../../../crates/zeroclaw-plugins", features = [
+    "plugins-wasm-cranelift",
+] }
+zeroclaw-api = { path = "../../../crates/zeroclaw-api" }
+zeroclaw-spawn = { path = "../../../crates/zeroclaw-spawn" }
+tokio = { version = "1.50", features = ["macros", "rt-multi-thread"] }
+tempfile = "3.26"

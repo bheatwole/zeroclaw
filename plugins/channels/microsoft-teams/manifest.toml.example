@@ -1,0 +1,32 @@
+# Copy to manifest.toml next to the built .wasm and fill in host_path values
+# for your deployment. See teams-app-manifest/SETUP.md for the full operator
+# runbook (Azure AD app registration, Graph admin consent, Teams app
+# sideloading).
+
+name = "microsoft-teams"
+version = "0.1.0"
+description = "Microsoft Teams channel via Graph API polling (application permissions)"
+wasm_path = "microsoft_teams_channel.wasm"
+capabilities = ["channel"]
+
+[[fine_grained_permissions]]
+type = "http"
+value = "graph.microsoft.com"
+
+[[fine_grained_permissions]]
+type = "http"
+value = "login.microsoftonline.com"
+
+# Read-only directory holding credentials.toml (tenant/client id+secret,
+# bot identity, configured team/channel list). Never commit the real file.
+[[fine_grained_permissions]]
+type = "dir"
+value = { host_path = "/etc/zeroclaw/secrets/teams", guest_path = "/secrets", dir_read = true, dir_write = false, file_read = true, file_write = false }
+
+# Read-write directory the plugin uses to persist poll state (dedup
+# watermark or Graph delta tokens) across restarts. Keep this separate from
+# the credentials directory above so the plugin never needs write access to
+# anything containing the client secret.
+[[fine_grained_permissions]]
+type = "dir"
+value = { host_path = "/var/lib/zeroclaw/plugins/teams-state", guest_path = "/state", dir_read = true, dir_write = true, file_read = true, file_write = true }
